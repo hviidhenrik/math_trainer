@@ -5,8 +5,10 @@ Created on Wed Mar 25 20:39:06 2020
 @author: hviid
 
 TO DO:
-    - add more math operations
-    - implement different difficulty levels
+    - add option to cancel choice in input, e.g. if saving to a file, cancel it
+        if "cancel" or "stop" is detected as file name
+    - add more math operations e.g. multiplication/division
+    - implement different/fixed difficulty levels
     - make graphical interface
 """
 
@@ -108,6 +110,7 @@ prob_array = []
 while True:
     int_min = input("Lowest possible integer: ")
     int_max = input("Highest possible integer: ")
+    print("")
     
     # check that the provided limits are actually integers, else prompt for it again
     try:
@@ -121,8 +124,10 @@ while True:
 
 # run the problem generating loop
 while True:
-    # if count % 9 == 0:
-    #     print("--- Problem {} ---".format(count+1),end="")
+    if count % 10 == 9 or count == 0:
+        print("--- Problem {} -------------".format(count+1),end="")
+    else:
+        print("----------------------------",end="")
     # initiate a problem instance
     prob = Problem(np.random.randint(int_min,int_max), 
                    np.random.randint(int_min,int_max), 
@@ -132,6 +137,7 @@ while True:
     timer_start = timer()
     
     # the answer from the user
+    
     input_answer = input("{} = ".format(prob))
         
     # check the input - if 's' is detected, stop the loop
@@ -151,11 +157,11 @@ while True:
         
         # if provided answer is correct
         if prob.result == input_answer:
-            print("Correct")
+            print("Correct\n",end="\n")
             corrects += 1
         # if it's not correct
         else:
-            print("Incorrect")
+            print("Incorrect\n",end="\n")
         
     # store timing, problem and answer and increment problem count
     timer_end = timer()
@@ -167,6 +173,9 @@ while True:
 # compute and print mean response time
 if len(prob_array) > 0:
     mean_time = np.mean([prob.time for prob in prob_array])
+    print("\n-------------------------------------------",end="\n")
+    print("----------------- RESULTS -----------------",end="\n")
+    print("-------------------------------------------\n",end="\n")
     print("{}% correct ({} out of {})".format(np.round(100*corrects/count,2), corrects, count))
     print("Average response time: ", np.round(np.mean(mean_time),2), "seconds")
 
@@ -222,11 +231,3 @@ df1 = pd.read_csv(file)
 # # df.to_csv("math_practice.csv",index=False)
 
 print(df1)
-
-#%% 
-
-from tkinter import *
-root = Tk() 
-root.geometry('300x600') 
-root.title("First Tkinter Window") 
-root.mainloop() 
