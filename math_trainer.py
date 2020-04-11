@@ -5,19 +5,13 @@ Created on Wed Mar 25 20:39:06 2020
 @author: hviid
 
 TO DO:
-    - add unique ID of a problem (should be commutative?) to be able to track
-       improvements/difficulties on that particular question and how many times
-       it has been answered
     - add more math operations
     - implement different difficulty levels
-    - add exception to handle empty input as in if user just pushes enter 
-       and nothing else
-    - add exception for bad input in all prompts
-    - make quick start mandatory if directory is empty
-    - fix divisionbyzero error caused by "stop" on first problem posed
+    - make graphical interface
 """
 
 import numpy as np
+from datetime import date
 
 # define a problem class
 class Problem:
@@ -26,10 +20,11 @@ class Problem:
         Problem.instance_count += 1
         self.num1 = num1
         self.num2 = num2
-        self.operator = operator
+        self.operator = operator # should be a function such as np.add
         self.result = operator(num1, num2)
         self.answer = np.nan
         self.time = np.nan
+        self.date = date.today().strftime("%b-%d-%Y")
         
     def __str__(self):
         op = "+" if self.operator == np.add else "-" 
@@ -126,10 +121,14 @@ while True:
 
 # run the problem generating loop
 while True:
+    # if count % 9 == 0:
+    #     print("--- Problem {} ---".format(count+1),end="")
     # initiate a problem instance
     prob = Problem(np.random.randint(int_min,int_max), 
                    np.random.randint(int_min,int_max), 
                    np.add)
+    
+    # start timer
     timer_start = timer()
     
     # the answer from the user
@@ -147,6 +146,7 @@ while True:
             input_answer = int(input_answer)
         except ValueError:
             print("Bad input detected - please provide integer numbers or \"stop\" (s)")
+            del(prob)
             continue       
         
         # if provided answer is correct
@@ -177,7 +177,8 @@ df = pd.DataFrame({"time":   [prob.time for prob in prob_array],
                    "num1":   [prob.num1 for prob in prob_array],
                    "num2":   [prob.num2 for prob in prob_array],
                    "result": [prob.result for prob in prob_array],
-                   "answer": [prob.answer for prob in prob_array]})
+                   "answer": [prob.answer for prob in prob_array],
+                   "date":   [prob.date for prob in prob_array]})
 df["correct"] = [1 if diff == 0 else 0 for diff in df.answer - df.result] # codes it as binary integers
 
 #%% writing or appending to a file
@@ -222,3 +223,10 @@ df1 = pd.read_csv(file)
 
 print(df1)
 
+#%% 
+
+from tkinter import *
+root = Tk() 
+root.geometry('300x600') 
+root.title("First Tkinter Window") 
+root.mainloop() 
