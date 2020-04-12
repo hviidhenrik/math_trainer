@@ -7,7 +7,9 @@ Created on Wed Mar 25 20:39:06 2020
 TO DO:
     - add option to cancel choice in input, e.g. if saving to a file, cancel it
         if "cancel" or "stop" is detected as file name
-    - add more math operations e.g. multiplication/division
+    - improve integer division mode give actually non-trivial problems that arent 
+        a/1 or a/a - prevent prime numbers
+    - implement a true division mode where results can be rounded fractions, e.g. 0.33
     - implement different/fixed difficulty levels
     - make graphical interface
 """
@@ -23,17 +25,34 @@ class Problem:
         self.num1 = num1
         self.num2 = num2
         self.operator = operator # should be a function such as np.add
-        self.result = operator(num1, num2)
+        
+        # prevent division by zero
+        if self.operator == np.divide and self.num2 == 0:
+            self.num2 += 1
+        
+        self.result = np.round(operator(self.num1, self.num2),2)
         self.answer = np.nan
         self.time = np.nan
         self.date = date.today().strftime("%b-%d-%Y")
         
     def __str__(self):
-        op = "+" if self.operator == np.add else "-" 
+        if self.operator == np.add:
+            op = "+"
+        elif self.operator == np.multiply:
+            op = "x"
+        elif self.operator == np.divide:
+            op = "/"
+            
         return "{} {} {}".format(self.num1, op, self.num2)
     
     def __repr__(self):
-        op = "+" if self.operator == np.add else "-" 
+        # op = "+" if self.operator == np.add else "-" 
+        if self.operator == np.add:
+            op = "+"
+        elif self.operator == np.multiply:
+            op = "x"
+        elif self.operator == np.divide:
+            op = "/"
         return "{} {} {}".format(self.num1, op, self.num2)
     
     def __del__(self):
@@ -106,6 +125,20 @@ count = 0
 corrects = 0
 prob_array = []
 
+# get desired math operation using input and a predefined dictionary of operations
+while True:
+    operator = input("Addition/subtraction, multiplication or division? [a/m/d]\n")
+    ops = {"a":np.add, "m":np.multiply, "d":np.divide}
+
+    # validate input and prompt user again if erroneous input was detected
+    try:
+        operator = ops[operator]
+    except KeyError:
+        print("Bad input detected. Must be either \"a\",\"m\" or \"d\"")
+        continue
+    else:
+        break
+
 # get upper and lower limits of the math problems to be posed
 while True:
     int_min = input("Lowest possible integer: ")
@@ -129,9 +162,20 @@ while True:
     else:
         print("----------------------------",end="")
     # initiate a problem instance
-    prob = Problem(np.random.randint(int_min,int_max), 
+    if operator == np.divide:
+        num1 = np.random.randint(int_min,int_max)
+        
+        # guard against fractional numbers and division by zero
+        while True:
+            num2 = np.random.randint(int_min,int_max)
+            if num2 != 0 and np.divide(num1,num2) % 1 == 0:
+                break
+            
+        prob = Problem(num1, num2, operator) # np.add originally
+    else:
+        prob = Problem(np.random.randint(int_min,int_max), 
                    np.random.randint(int_min,int_max), 
-                   np.add)
+                   operator) # np.add originally
     
     # start timer
     timer_start = timer()
@@ -152,6 +196,7 @@ while True:
             input_answer = int(input_answer)
         except ValueError:
             print("Bad input detected - please provide integer numbers or \"stop\" (s)")
+            print("")
             del(prob)
             continue       
         
