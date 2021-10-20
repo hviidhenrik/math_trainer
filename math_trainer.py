@@ -5,6 +5,7 @@ Created on Wed Mar 25 20:39:06 2020
 @author: Henrik Hviid Hansen
 
 TO DO:
+    - implement time difference mode, e.g. hours between 22 and 8
     - add option to cancel choice in input, e.g. if saving to a file, cancel it
         if "cancel" or "stop" is detected as file name
     - improve integer division mode to give actually non-trivial problems that arent 
@@ -365,3 +366,4 @@ plt.legend()
 plt.title("Timing distributions")
 plt.xlabel("Seconds")
 plt.ylabel("Frequency")
+plt.show()
