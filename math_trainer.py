@@ -5,6 +5,7 @@ Created on Wed Mar 25 20:39:06 2020
 @author: Henrik Hviid Hansen
 
 TO DO:
+    - implement time difference mode, e.g. hours between 22 and 8
     - add option to cancel choice in input, e.g. if saving to a file, cancel it
         if "cancel" or "stop" is detected as file name
     - improve integer division mode to give actually non-trivial problems that arent 
@@ -325,10 +326,13 @@ if start == "quick" and len(prob_array) > 0:
 
         mode = "a" if file in files else "w"  # append or write
         df.to_csv(file, index=False, mode=mode, header=mode == "w")
+    else:
+        quit()
 
 # else simply save to the file specified in the beginning
 elif start == "savefile" and len(prob_array) > 0:
     df.to_csv(file, index=False, mode="a", header=not file_exists)
+
 
 df1 = pd.read_csv(file)
 # # df1
@@ -365,3 +369,4 @@ plt.legend()
 plt.title("Timing distributions")
 plt.xlabel("Seconds")
 plt.ylabel("Frequency")
+plt.show()
