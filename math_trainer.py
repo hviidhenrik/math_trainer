@@ -326,10 +326,13 @@ if start == "quick" and len(prob_array) > 0:
 
         mode = "a" if file in files else "w"  # append or write
         df.to_csv(file, index=False, mode=mode, header=mode == "w")
+    else:
+        quit()
 
 # else simply save to the file specified in the beginning
 elif start == "savefile" and len(prob_array) > 0:
     df.to_csv(file, index=False, mode="a", header=not file_exists)
+
 
 df1 = pd.read_csv(file)
 # # df1
