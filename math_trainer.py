@@ -29,29 +29,42 @@ from datetime import date
 class Problem:
     instance_count = 0
 
-    def __init__(self, num1, num2, operator):
+    # def __init__(self, num1, num2, operator):
+    #     Problem.instance_count += 1
+    #     self.num1 = num1
+    #     self.num2 = num2
+    def __init__(self, min: int, max: int, mode: str):
         Problem.instance_count += 1
-        self.num1 = num1
-        self.num2 = num2
-        self.operator = operator  # should be a function such as np.add
-
-        # prevent division by zero
-        if self.operator == np.divide and self.num2 == 0:
-            self.num2 += 1
-
-        self.result = np.round(operator(self.num1, self.num2), 2)  # the correct result
+        mode_to_operator_mapping = {"addition": np.add, "multiplication": np.multiply,
+                                    "division": np.divide, "square": np.multiply}
+        self.min = min
+        self.max = max
+        self.mode = mode
+        self.operator = mode_to_operator_mapping[mode.lower()]  # should be a function such as np.add
         self.answer = np.nan  # the user provided answer
         self.error = np.nan  # how far off the provided answer is
         self.time = np.nan  # how long it took to answer
         self.date = date.today().strftime("%b-%d-%Y")
+        self._select_and_set_numbers()
+
+    def _select_and_set_numbers(self):
+        num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        num2 = np.random.randint(self.min, self.max + 1)
+
+        # prevent division by zero
+        if self.mode == "division" and num2 == 0:
+            num2 += 1
+        elif self.mode == "square":
+            num2 = num1
+
+        self.num1 = num1
+        self.num2 = num2
+        self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
 
     def __str__(self):
-        if self.operator == np.add:
-            op = "+"
-        elif self.operator == np.multiply:
-            op = "x"
-        elif self.operator == np.divide:
-            op = "/"
+        mode_to_operator_string_mapping = {"addition": "+", "multiplication": "x",
+                                           "division": "/", "square": "x"}
+        op = mode_to_operator_string_mapping[self.mode]
 
         return "{} {} {}".format(self.num1, op, self.num2)
 
@@ -169,17 +182,16 @@ while True:
     print("[1] Addition/subtraction")
     print("[2] Multiplication")
     print("[3] Division")
+    print("[4] Square")
 
     operator = input("Your choice: ")
     print("----------------------------\n")
 
-    # operator = input("Addition/subtraction, multiplication or division? [a/m/d]\n")
-    # ops = {"a":np.add, "m":np.multiply, "d":np.divide}
-    ops = {"1": np.add, "2": np.multiply, "3": np.divide}
+    mode_mapping = {"1": "addition", "2": "multiplication", "3": "division", "4": "square"}
 
     # validate input and prompt user again if erroneous input was detected
     try:
-        operator = ops[operator]
+        operator = mode_mapping[operator]
     except KeyError:
         print("Bad input detected. Must be either 1, 2 or 3 as below: \n")
         continue
@@ -217,18 +229,15 @@ while True:
             if num2 != 0 and np.divide(num1, num2) % 1 == 0:
                 break
 
-        prob = Problem(num1, num2, operator)  # np.add originally
+        prob = Problem(int_min, int_max, operator)  # np.add originally
     else:
-        prob = Problem(np.random.randint(int_min, int_max),
-                       np.random.randint(int_min, int_max),
-                       operator)  # np.add originally
+        prob = Problem(int_min, int_max, operator)  # np.add originally
 
     # start timer
     timer_start = timer()
 
     # the answer from the user
-
-    input_answer = input("{} = ".format(prob))
+    input_answer = input(f"{prob} = ")
 
     # check the input - if 's' is detected, stop the loop
     if input_answer.lower().startswith("s"):
@@ -332,7 +341,6 @@ if start == "quick" and len(prob_array) > 0:
 # else simply save to the file specified in the beginning
 elif start == "savefile" and len(prob_array) > 0:
     df.to_csv(file, index=False, mode="a", header=not file_exists)
-
 
 df1 = pd.read_csv(file)
 # # df1
