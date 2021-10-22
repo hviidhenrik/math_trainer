@@ -1,2 +1,4 @@
 .idea/
 backups/
+archived/
+__pycache__/
