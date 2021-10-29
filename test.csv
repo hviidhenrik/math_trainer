@@ -1,2 +1,6 @@
 time,num1,num2,result,answer,date,correct,operation
 1.351145500000257,6,6,12,12,Apr-22-2020,1,<ufunc 'add'>
+1.8414999000000005,1,2,3,3,Oct-23-2021,1,addition
+2.7081919999999986,3,4,7,7,Oct-23-2021,1,addition
+1.9263059000000027,3,3,6,6,Oct-23-2021,1,addition
+1.8544163000000005,4,2,6,8,Oct-23-2021,0,addition

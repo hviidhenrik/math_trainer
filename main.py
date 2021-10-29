@@ -3,6 +3,11 @@ from math_trainer.helpers import input_number
 
 import os
 import numpy as np
+from timeit import default_timer as timer
+import pandas as pd
+from scipy import stats
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # prompt the user whether to quick start or use existing/new file and check input
 
@@ -17,28 +22,28 @@ print("How would you like to play?\n")
 while True:
     print("[1] Quick start")
     print("[2] Create/select a file to save to")
-    start = input("Your choice: ")
+    quick_start_or_with_save_file = input("Your choice: ")
     print("----------------------------\n")
 
     # check the input for validity
 
     ##
-    modes = {"1": "quick", "2": "savefile", "q": "quit"}
+    start_modes = {"1": "quick", "2": "savefile", "q": "quit"}
     print()
     # validate input and prompt user again if erroneous input was detected
     try:
-        start = modes[start]
+        quick_start_or_with_save_file = start_modes[quick_start_or_with_save_file]
     except KeyError:
         print("Bad input detected. Must be either 1 or 2\n")
     # hidden quit option (mostly for my own testing purposes)
     else:
-        if start == "quit":
+        if quick_start_or_with_save_file == "quit":
             raise SystemExit
         else:
             break
 
 # if existing/new file was chosen, let user decide the file to save to
-if start == "savefile":
+if quick_start_or_with_save_file == "savefile":
     # print an overview of already existing csv files in directory
     print("\nThe following data files were found already:\n")
     while True:
@@ -70,7 +75,6 @@ if start == "savefile":
             break
 
 # %% main section that runs the practice loop
-from timeit import default_timer as timer
 
 # initiate counts, lists and integer limits
 count = 0
@@ -79,7 +83,7 @@ prob_array = []
 
 # get desired math operation using input and a predefined dictionary of operations
 while True:
-    print("[1] Addition/subtraction")
+    print("[1] Addition")
     print("[2] Multiplication")
     print("[3] Division")
     print("[4] Square")
@@ -180,8 +184,6 @@ if len(prob_array) > 0:
     print("Average response time: ", np.round(np.mean(mean_time), 2), "seconds")
 
 # %% turn into a dataset
-import pandas as pd
-
 df = pd.DataFrame({"time": [prob.time for prob in prob_array],
                    "num1": [prob.num1 for prob in prob_array],
                    "num2": [prob.num2 for prob in prob_array],
@@ -201,7 +203,7 @@ df["operation"] = mode
 # %% writing or appending to a file
 
 # if quick start was chosen in the beginning prompt for saving
-if start == "quick" and len(prob_array) > 0:
+if quick_start_or_with_save_file == "quick" and len(prob_array) > 0:
     # ask if user wishes to save results to a file
     input_savefile = input("Save your results to a file? [y/n]\n")
 
@@ -236,31 +238,31 @@ if start == "quick" and len(prob_array) > 0:
         write_mode = "a" if file in files else "w"  # append or write
         df.to_csv(file, index=False, mode=write_mode, header=write_mode == "w")
     else:
+        df_to_print = pd.DataFrame({"mean": np.mean(df["time"]),
+                                    "median": np.median(df["time"]),
+                                    "std": np.std(df["time"])},
+                                   index=[0])
+        print("\nResponse time (seconds):\n", df_to_print.round(3))
         quit()
 
 # else simply save to the file specified in the beginning
-elif start == "savefile" and len(prob_array) > 0:
+elif quick_start_or_with_save_file == "savefile" and len(prob_array) > 0:
     df.to_csv(file, index=False, mode="a", header=not file_exists)
 
 df1 = pd.read_csv(file)
-# # df1
-# # df.to_csv("math_practice.csv",index=False)
 print("")
 print(df1)
 
-# %% quick analysis
-from scipy import stats
-import seaborn as sns
-import matplotlib.pyplot as plt
-
+# mean and standard deviation analysis of response times
 dates = df1.date.unique()
 date_arrays = [df1[df1["date"] == date][["time", "date"]] for date in dates]
 
 # print mean and sd
 df5 = pd.DataFrame([(np.mean(dates.time),
+                     np.median(dates.time),
                      np.std(dates.time),
                      dates.date.unique()) for dates in date_arrays],
-                   columns=["mean", "sd", "date"])
+                   columns=["mean", "median", "sd", "date"])
 print(df5)
 
 # perform t-test with unequal variances
