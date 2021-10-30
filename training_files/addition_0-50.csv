@@ -256,3 +256,4 @@ time,num1,num2,result,answer,date,correct,operation
 4.247593399999914,41,24,65,65,Apr-22-2020,1,<ufunc 'add'>
 2.5200721999999587,46,6,52,52,Apr-22-2020,1,<ufunc 'add'>
 6.119933299999957,27,30,57,57,Apr-22-2020,1,<ufunc 'add'>
+5.5360499,29,40,69,69,Oct-31-2021,1,addition
