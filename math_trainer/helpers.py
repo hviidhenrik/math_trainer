@@ -1,5 +1,7 @@
-
 # helper function to take validate and take integer input from the user
+from typing import Union, List
+
+
 def input_number(message, exception_message=None):
     # if no exception message is provided, use a standard one
     if exception_message is None:
@@ -15,3 +17,8 @@ def input_number(message, exception_message=None):
         else:
             break
     return user_input
+
+
+def check_for_quit(user_input: Union[str, List[str]]):
+    if "q" in user_input:
+        quit()

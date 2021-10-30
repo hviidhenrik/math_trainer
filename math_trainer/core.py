@@ -29,8 +29,13 @@ class Problem:
 
     def __init__(self, min: int, max: int, **kwargs):
         Problem.instance_count += 1
-        self.mode_to_operator_string_mapping = {"addition": "+", "multiplication": "x",
-                                                "division": "/", "square": "x"}
+        self.mode_to_operator_string_mapping = {
+            "addition": "+",
+            "subtraction": "-",
+            "multiplication": "x",
+            "division": "/",
+            "square": "x",
+        }
         self.problem_type = None
         self.operator = None
         self.answer_type = None
@@ -42,9 +47,13 @@ class Problem:
         self.date = date.today().strftime("%b-%d-%Y")
 
     def _select_and_set_numbers(self):
-        self.num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        self.num1 = np.random.randint(
+            self.min, self.max + 1
+        )  # + 1 because max is exclusive in randint
         self.num2 = np.random.randint(self.min, self.max + 1)
-        self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
+        self.result = np.round(
+            self.operator(self.num1, self.num2), 2
+        )  # the correct result
 
     def __str__(self):
         op = self.mode_to_operator_string_mapping[self.problem_type]
@@ -70,6 +79,26 @@ class AdditionProblem(Problem):
         self._select_and_set_numbers()
 
 
+class SubtractionProblem(Problem):
+    def __init__(self, min: int, max: int, **kwargs):
+        super().__init__(min, max)
+        self.operator = np.subtract
+        self.problem_type = "subtraction"
+        self.answer_type = int
+        self._select_and_set_numbers()
+
+    def _select_and_set_numbers(self):
+        self.num1 = np.random.randint(
+            self.min, self.max + 1
+        )  # + 1 because max is exclusive in randint
+        self.num2 = np.random.randint(
+            self.min, self.num1 + 1
+        )  # ensure num2 is always less than num1 for subtraction
+        self.result = np.round(
+            self.operator(self.num1, self.num2), 2
+        )  # the correct result
+
+
 class MultiplicationProblem(Problem):
     def __init__(self, min: int, max: int, **kwargs):
         super().__init__(min, max)
@@ -79,12 +108,21 @@ class MultiplicationProblem(Problem):
         self._select_and_set_numbers()
 
 
-class IntegerDivisionProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs):
+class DivisionProblem(Problem):
+    def __init__(
+        self,
+        min: int,
+        max: int,
+        significant_digits: int = 1,
+        only_integers: bool = False,
+        **kwargs,
+    ):
         super().__init__(min, max)
         self.operator = np.divide
         self.problem_type = "division"
-        self.answer_type = int
+        self.answer_type = float
+        self.only_integers = only_integers
+        self.significant_digits = significant_digits
         self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
@@ -92,19 +130,24 @@ class IntegerDivisionProblem(Problem):
         if self.min == 0:
             self.min += 1
 
-        num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        num1 = np.random.randint(
+            self.min, self.max + 1
+        )  # + 1 because max is exclusive in randint
         num2 = np.random.randint(self.min, self.max + 1)
 
-        # keep sampling a new number for num2 until the resulting ratio is integer
-        result_is_integer = np.divide(num1, num2) % 1 != 0
-        if not result_is_integer:
-            while not result_is_integer:
-                num2 = np.random.randint(self.min, self.max + 1)
-                result_is_integer = np.divide(num1, num2) % 1 != 0
+        if self.only_integers:
+            # keep sampling a new number for num2 until the resulting ratio is integer
+            result_is_integer = np.divide(num1, num2) % 1 == 0
+            if not result_is_integer:
+                while not result_is_integer:
+                    num2 = np.random.randint(self.min, self.max + 1)
+                    result_is_integer = np.divide(num1, num2) % 1 == 0
 
         self.num1 = num1
         self.num2 = num2
-        self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
+        self.result = np.round(
+            self.operator(self.num1, self.num2), self.significant_digits
+        )  # the correct result
 
 
 class SquareProblem(Problem):
@@ -116,9 +159,13 @@ class SquareProblem(Problem):
         self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
-        self.num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        self.num1 = np.random.randint(
+            self.min, self.max + 1
+        )  # + 1 because max is exclusive in randint
         self.num2 = self.num1
-        self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
+        self.result = np.round(
+            self.operator(self.num1, self.num2), 2
+        )  # the correct result
 
 
 class SquareRootProblem(Problem):
@@ -132,9 +179,13 @@ class SquareRootProblem(Problem):
         self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
-        self.num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        self.num1 = np.random.randint(
+            self.min, self.max + 1
+        )  # + 1 because max is exclusive in randint
         self.num2 = None
-        self.result = np.round(self.operator(self.num1), self.significant_digits)  # the correct result
+        self.result = np.round(
+            self.operator(self.num1), self.significant_digits
+        )  # the correct result
 
     def __str__(self):
         return f"sqrt({self.num1})"
@@ -144,4 +195,4 @@ class SquareRootProblem(Problem):
 
 
 if __name__ == "__main__":
-    problem = IntegerDivisionProblem(2, 4, "division")
+    problem = DivisionProblem(2, 4, "division")
