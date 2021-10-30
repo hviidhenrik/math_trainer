@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 # prompt the user whether to quick start or use existing/new file and check input
 
+training_files_path = "./training_files"
 
 print("WELCOME TO MATH TRAINER v1.0")
 print("----------------------------")
@@ -47,7 +48,7 @@ if quick_start_or_with_save_file == "savefile":
     # print an overview of already existing csv files in directory
     print("\nThe following data files were found already:\n")
     while True:
-        files = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith(".csv")]
+        files = [f for f in os.listdir(training_files_path) if f.endswith(".csv")]
         [print("[", idx + 1, "] ", f, sep="") for idx, f in enumerate(files)]
 
         # prompt the user for a desired file
@@ -73,8 +74,6 @@ if quick_start_or_with_save_file == "savefile":
             file = files[idx]
             file_exists = True
             break
-
-# %% main section that runs the practice loop
 
 # initiate counts, lists and integer limits
 count = 0
@@ -204,7 +203,7 @@ if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
         print("----------------------------------------")
         print("The following data files were found already:\n")
         while True:
-            files = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith(".csv")]
+            files = [f for f in os.listdir(training_files_path) if f.endswith(".csv")]
             [print(idx + 1, f) for idx, f in enumerate(files)]
 
             # prompt the user for a desired file
@@ -227,17 +226,15 @@ if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
                 break
 
         write_mode = "a" if file in files else "w"  # append or write
-        df.to_csv(file, index=False, mode=write_mode, header=write_mode == "w")
+        df.to_csv(training_files_path + "/" + file, index=False, mode=write_mode, header=write_mode == "w")
     else:
         quit()
 
 # else simply save to the file specified in the beginning
 elif quick_start_or_with_save_file == "savefile" and len(problem_array) > 0:
-    df.to_csv(file, index=False, mode="a", header=not file_exists)
+    df.to_csv(training_files_path + "/" + file, index=False, mode="a", header=not file_exists)
 
-df1 = pd.read_csv(file)
-print("")
-print(df1)
+df1 = pd.read_csv(training_files_path + "/" + file)
 
 # mean and standard deviation analysis of response times
 dates = df1.date.unique()
