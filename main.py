@@ -86,17 +86,18 @@ while True:
     print("[2] Multiplication")
     print("[3] Division")
     print("[4] Square")
+    print("[5] Square root approximation")
 
     problem_type = input("Your choice: ")
     print("----------------------------\n")
 
-    mode_mapping = {"1": "addition", "2": "multiplication", "3": "division", "4": "square"}
+    mode_mapping = {"1": "addition", "2": "multiplication", "3": "division", "4": "square", "5": "square_root"}
 
     # validate input and prompt user again if erroneous input was detected
     try:
         problem_type = mode_mapping[problem_type]
     except KeyError:
-        print("Bad input detected. Must be either 1, 2 or 3 as below: \n")
+        print("Bad input detected. Must be either 1, 2, 3, 4 or 5 as below: \n")
         continue
     else:
         break
@@ -105,6 +106,10 @@ while True:
 while True:
     int_min = input("Lowest possible integer: ")
     int_max = input("Highest possible integer: ")
+
+    significant_digits = None
+    if problem_type == "square_root":
+        significant_digits = int(input("Significant digits (0 for integer solutions): "))
     print("")
 
     # check that the provided limits are actually integers, else prompt for it again
@@ -125,8 +130,9 @@ while True:
 
     # initiate a problem instance
     mode_to_problem_type_mapping = {"addition": AdditionProblem, "multiplication": MultiplicationProblem,
-                                    "division": IntegerDivisionProblem, "square": SquareProblem}
-    problem = mode_to_problem_type_mapping[problem_type](min=int_min, max=int_max)
+                                    "division": IntegerDivisionProblem, "square": SquareProblem,
+                                    "square_root": SquareRootProblem}
+    problem = mode_to_problem_type_mapping[problem_type](min=int_min, max=int_max, signif_digits=significant_digits)
 
     # start timer
     timer_start = timer()
@@ -143,7 +149,8 @@ while True:
     else:
         # try to convert given answer to integer else print message and pose new problem
         try:
-            input_answer = int(input_answer)
+            # input_answer = int(input_answer)
+            input_answer = problem.check_user_answer_type(input_answer)
         except ValueError:
             print("Bad input detected - please provide integer numbers or \"stop\" (s)")
             print("")
