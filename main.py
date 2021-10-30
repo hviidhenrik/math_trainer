@@ -1,4 +1,4 @@
-from math_trainer.core import Problem
+from math_trainer.core import *
 from math_trainer.helpers import input_number
 
 import os
@@ -79,7 +79,7 @@ if quick_start_or_with_save_file == "savefile":
 # initiate counts, lists and integer limits
 count = 0
 corrects = 0
-prob_array = []
+problem_array = []
 
 # get desired math operation using input and a predefined dictionary of operations
 while True:
@@ -88,14 +88,14 @@ while True:
     print("[3] Division")
     print("[4] Square")
 
-    mode = input("Your choice: ")
+    problem_type = input("Your choice: ")
     print("----------------------------\n")
 
     mode_mapping = {"1": "addition", "2": "multiplication", "3": "division", "4": "square"}
 
     # validate input and prompt user again if erroneous input was detected
     try:
-        mode = mode_mapping[mode]
+        problem_type = mode_mapping[problem_type]
     except KeyError:
         print("Bad input detected. Must be either 1, 2 or 3 as below: \n")
         continue
@@ -120,33 +120,25 @@ while True:
 # run the problem generating loop
 while True:
     if count % 10 == 9 or count == 0:
-        print("--- Problem {} -------------".format(count + 1), end="")
+        print(f"--- Problem {count + 1} -------------", end="")
     else:
         print("----------------------------", end="")
+
     # initiate a problem instance
-    if mode == "division":
-        num1 = np.random.randint(int_min, int_max)
-
-        # guard against fractional numbers and division by zero
-        while True:
-            num2 = np.random.randint(int_min, int_max)
-            if num2 != 0 and np.divide(num1, num2) % 1 == 0:
-                break
-
-        prob = Problem(int_min, int_max, mode)  # np.add originally
-    else:
-        prob = Problem(int_min, int_max, mode)  # np.add originally
+    mode_to_problem_type_mapping = {"addition": AdditionProblem, "multiplication": MultiplicationProblem,
+                                    "division": IntegerDivisionProblem, "square": SquareProblem}
+    problem = mode_to_problem_type_mapping[problem_type](min=int_min, max=int_max)
 
     # start timer
     timer_start = timer()
 
     # the answer from the user
-    input_answer = input(f"{prob} = ")
+    input_answer = input(f"{problem} = ")
 
     # check the input - if 's' is detected, stop the loop
     if input_answer.lower().startswith("s"):
         timer_end = timer()
-        del (prob)
+        del problem
         break
     # else try to convert the input to integer
     else:
@@ -156,11 +148,11 @@ while True:
         except ValueError:
             print("Bad input detected - please provide integer numbers or \"stop\" (s)")
             print("")
-            del (prob)
+            del problem
             continue
 
             # if provided answer is correct
-        if prob.result == input_answer:
+        if problem.result == input_answer:
             print("Correct\n", end="\n")
             corrects += 1
         # if it's not correct
@@ -169,41 +161,40 @@ while True:
 
     # store timing, problem and answer and increment problem count
     timer_end = timer()
-    prob.time = timer_end - timer_start
+    problem.time = timer_end - timer_start
     count += 1
-    prob_array.append(prob)
-    prob.answer = input_answer
+    problem_array.append(problem)
+    problem.answer = input_answer
 
 # compute and print mean response time
-if len(prob_array) > 0:
-    mean_time = np.mean([prob.time for prob in prob_array])
+if len(problem_array) > 0:
+    mean_time = np.mean([prob.time for prob in problem_array])
     print("\n-------------------------------------------", end="\n")
     print("----------------- RESULTS -----------------", end="\n")
     print("-------------------------------------------\n", end="\n")
     print("{}% correct ({} out of {})".format(np.round(100 * corrects / count, 2), corrects, count))
     print("Average response time: ", np.round(np.mean(mean_time), 2), "seconds")
 
-# %% turn into a dataset
-df = pd.DataFrame({"time": [prob.time for prob in prob_array],
-                   "num1": [prob.num1 for prob in prob_array],
-                   "num2": [prob.num2 for prob in prob_array],
-                   "result": [prob.result for prob in prob_array],
-                   "answer": [prob.answer for prob in prob_array],
-                   "date": [prob.date for prob in prob_array]})
-df["correct"] = [1 if diff == 0 else 0 for diff in df.answer - df.result]  # codes it as binary integers
-df["operation"] = mode
-
-# %% for adding new columns to existing data - NOT RUN!
-# filename88 = "filename-goes-here.csv"
-# df88 = pd.read_csv(filename88)
-# df88["operation"] = np.multiply
-# df88.to_csv(filename88,index=False)
-# df99 = pd.read_csv(filename88)
-# df99
-# %% writing or appending to a file
+    # turn into a dataset
+    df = pd.DataFrame({"time": [prob.time for prob in problem_array],
+                       "num1": [prob.num1 for prob in problem_array],
+                       "num2": [prob.num2 for prob in problem_array],
+                       "result": [prob.result for prob in problem_array],
+                       "answer": [prob.answer for prob in problem_array],
+                       "date": [prob.date for prob in problem_array]})
+    df["correct"] = [1 if diff == 0 else 0 for diff in df.answer - df.result]  # codes it as binary integers
+    df["operation"] = problem_type
+else:
+    quit()
 
 # if quick start was chosen in the beginning prompt for saving
-if quick_start_or_with_save_file == "quick" and len(prob_array) > 0:
+if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
+    # print results
+    df_to_print = pd.DataFrame({"mean": np.mean(df["time"]),
+                                "median": np.median(df["time"]),
+                                "std": np.std(df["time"])},
+                               index=[0])
+    print("\nResponse time (seconds):\n", df_to_print.round(3))
     # ask if user wishes to save results to a file
     input_savefile = input("Save your results to a file? [y/n]\n")
 
@@ -238,15 +229,10 @@ if quick_start_or_with_save_file == "quick" and len(prob_array) > 0:
         write_mode = "a" if file in files else "w"  # append or write
         df.to_csv(file, index=False, mode=write_mode, header=write_mode == "w")
     else:
-        df_to_print = pd.DataFrame({"mean": np.mean(df["time"]),
-                                    "median": np.median(df["time"]),
-                                    "std": np.std(df["time"])},
-                                   index=[0])
-        print("\nResponse time (seconds):\n", df_to_print.round(3))
         quit()
 
 # else simply save to the file specified in the beginning
-elif quick_start_or_with_save_file == "savefile" and len(prob_array) > 0:
+elif quick_start_or_with_save_file == "savefile" and len(problem_array) > 0:
     df.to_csv(file, index=False, mode="a", header=not file_exists)
 
 df1 = pd.read_csv(file)

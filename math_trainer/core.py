@@ -26,49 +26,30 @@ from datetime import date
 class Problem:
     instance_count = 0
 
-    def __init__(self, min: int, max: int, mode: str):
+    def __init__(self, min: int, max: int):
         Problem.instance_count += 1
-        mode_to_operator_function_mapping = {"addition": np.add, "multiplication": np.multiply,
-                                             "division": np.divide, "square": np.multiply}
         self.mode_to_operator_string_mapping = {"addition": "+", "multiplication": "x",
                                                 "division": "/", "square": "x"}
+        self.problem_type = None
+        self.operator = None
         self.min = min
         self.max = max
-        self.mode = mode
-        self.operator = mode_to_operator_function_mapping[mode.lower()]  # should be a function such as np.add
         self.answer = np.nan  # the user provided answer
         self.error = np.nan  # how far off the provided answer is
         self.time = np.nan  # how long it took to answer
         self.date = date.today().strftime("%b-%d-%Y")
-        self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
-        # prevent division by zero
-        if self.mode == "division" and self.min == 0:
-            self.min += 1
-
-        num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
-        num2 = np.random.randint(self.min, self.max + 1)
-
-        # keep sampling a new number for num2 until the resulting ratio is integer
-        result_is_integer = np.divide(num1, num2) % 1 != 0
-        if self.mode == "division" and not result_is_integer:
-            while not result_is_integer:
-                num2 = np.random.randint(self.min, self.max + 1)
-                result_is_integer = np.divide(num1, num2) % 1 != 0
-        elif self.mode == "square":
-            num2 = num1
-
-        self.num1 = num1
-        self.num2 = num2
+        self.num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
+        self.num2 = np.random.randint(self.min, self.max + 1)
         self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
 
     def __str__(self):
-        op = self.mode_to_operator_string_mapping[self.mode]
+        op = self.mode_to_operator_string_mapping[self.problem_type]
         return f"{self.num1} {op} {self.num2}"
 
     def __repr__(self):
-        op = self.mode_to_operator_string_mapping[self.mode]
+        op = self.mode_to_operator_string_mapping[self.problem_type]
         return f"{self.num1} {op} {self.num2}"
 
     def __del__(self):
@@ -76,15 +57,26 @@ class Problem:
 
 
 class AdditionProblem(Problem):
-    def __init__(self):
+    def __init__(self, min: int, max: int):
+        super().__init__(min, max)
         self.operator = np.add
-        pass
+        self.problem_type = "addition"
+        self._select_and_set_numbers()
+
+
+class MultiplicationProblem(Problem):
+    def __init__(self, min: int, max: int):
+        super().__init__(min, max)
+        self.operator = np.multiply
+        self.problem_type = "multiplication"
+        self._select_and_set_numbers()
 
 
 class IntegerDivisionProblem(Problem):
-    def __init_(self, min: int, max: int):
-        super().__init__(min=min, max=max, mode="division")
+    def __init__(self, min: int, max: int):
+        super().__init__(min, max)
         self.operator = np.divide
+        self.problem_type = "division"
         self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
@@ -108,11 +100,15 @@ class IntegerDivisionProblem(Problem):
 
 
 class SquareProblem(Problem):
+    def __init__(self, min: int, max: int):
+        super().__init__(min, max)
+        self.operator = np.multiply
+        self.problem_type = "square"
+        self._select_and_set_numbers()
 
     def _select_and_set_numbers(self):
         self.num1 = np.random.randint(self.min, self.max + 1)  # + 1 because max is exclusive in randint
         self.num2 = self.num1
-
         self.result = np.round(self.operator(self.num1, self.num2), 2)  # the correct result
 
 
