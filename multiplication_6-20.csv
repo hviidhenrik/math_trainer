@@ -26,6 +26,7 @@ time,num1,num2,result,answer,date,correct,operation
 6.511204899999996,11,8,88,88,Oct-04-2020,1,<ufunc 'multiply'>
 38.0533461,17,18,306,306,Oct-04-2020,1,<ufunc 'multiply'>
 10.75005090000002,9,16,144,144,Oct-04-2020,1,<ufunc 'multiply'>
+<<<<<<< HEAD
 4.2325059,20,13,260,26,Oct-23-2021,0,multiplication
 7.778194800000001,12,15,180,180,Oct-23-2021,1,multiplication
 16.5475431,18,7,126,126,Oct-23-2021,1,multiplication

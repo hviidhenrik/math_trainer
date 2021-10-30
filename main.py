@@ -266,3 +266,4 @@ plt.title("Timing distributions")
 plt.xlabel("Seconds")
 plt.ylabel("Frequency")
 plt.show()
+

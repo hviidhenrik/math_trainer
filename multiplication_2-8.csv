@@ -99,6 +99,7 @@ time,num1,num2,result,answer,date,correct,operation
 1.744932800000015,7,3,21,21,Oct-20-2021,1,<ufunc 'multiply'>
 2.2775456999999903,7,6,42,42,Oct-20-2021,1,<ufunc 'multiply'>
 3.4826017000000036,6,3,18,18,Oct-20-2021,1,<ufunc 'multiply'>
+<<<<<<< HEAD
 2.088489300000001,7,2,14,14,Oct-23-2021,1,multiplication
 3.860945900000001,7,8,56,56,Oct-23-2021,1,multiplication
 1.3465811000000016,2,4,8,8,Oct-23-2021,1,multiplication
