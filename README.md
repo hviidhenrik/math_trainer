@@ -23,9 +23,8 @@ I feel like it. The current back log of things to do is
 as listed below:
 
 - implement time difference mode, e.g. hours between 22 and 8
+- implement log approximation mode
 - implement "mixed mode" which poses a random mix of selected problem types
-- improve integer division mode to give actually non-trivial problems that arent
-        a/1 or a/a - prevent prime numbers
-- implement a true division mode where results can be rounded fractions, e.g. 0.33
 - make graphical interface (probably never gonna happen)
-- catch empty input when selecting file to save
+- make text-to-speech so problems are read aloud better simulating a 
+  day to day example situation of mental math 

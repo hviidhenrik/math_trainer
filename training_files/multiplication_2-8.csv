@@ -200,3 +200,5 @@ time,num1,num2,result,answer,date,correct,operation
 2.1089388999999983,6,5,30,30,Oct-23-2021,1,multiplication
 1.4605923000000018,3,3,9,9,Oct-23-2021,1,multiplication
 2.1638976000000127,2,8,16,16,Oct-23-2021,1,multiplication
+2.1600163000000006,12,12,144,144,Oct-31-2021,1,square
+1.5386615,8,8,64,64,Oct-31-2021,1,square

@@ -9,16 +9,12 @@ from scipy import stats
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 training_files_path = "./training_files"
 
 print("WELCOME TO MATH TRAINER v1.2")
 print("----------------------------")
 print("How would you like to play?\n")
 
-# print("Quick start (q) or save results to existing/new file (e)?\n")
-
-# start = input("Quick start (q) or save results to existing/new file (e)?\n")
 while True:
     print("[1] Quick start")
     print("[2] Create/select a file to save to")
@@ -26,9 +22,6 @@ while True:
     check_for_quit(quick_start_or_with_save_file.lower())
     print("----------------------------\n")
 
-    # check the input for validity
-
-    ##
     start_modes = {"1": "quick", "2": "savefile"}
     print()
     # validate input and prompt user again if erroneous input was detected
@@ -73,9 +66,9 @@ if quick_start_or_with_save_file == "savefile":
             break
 
 # initiate counts, lists and integer limits
-count = 0
+problem_count = 0
 corrects = 0
-problem_array = []
+problem_list = []
 
 # get desired math operation using input and a predefined dictionary of operations
 while True:
@@ -86,12 +79,12 @@ while True:
     print("[5] Square")
     print("[6] Square root approximation")
 
-    problem_type = input("Your choice: ")
-    check_for_quit(problem_type.lower())
+    selected_problem_type = input("Your choice: ")
+    check_for_quit(selected_problem_type.lower())
 
     print("----------------------------\n")
 
-    mode_mapping = {
+    input_to_problem_type_mapping = {
         "1": "addition",
         "2": "subtraction",
         "3": "multiplication",
@@ -102,7 +95,7 @@ while True:
 
     # validate input and prompt user again if erroneous input was detected
     try:
-        problem_type = mode_mapping[problem_type]
+        selected_problem_type = input_to_problem_type_mapping[selected_problem_type]
     except KeyError:
         print("Bad input detected. Must be either 1, 2, 3, 4, 5 or 6 as below: \n")
         continue
@@ -117,11 +110,11 @@ while True:
     check_for_quit([int_min.lower(), int_max.lower()])
 
     only_integers = False
-    if problem_type == "division":
+    if selected_problem_type == "division":
         only_integers = input("Integer results only? [y/n]:\n")
         only_integers = True if "y" in only_integers.lower() else False
     significant_digits = None
-    if problem_type in ["division", "square_root"] and not only_integers:
+    if selected_problem_type in ["division", "square_root"] and not only_integers:
         significant_digits = int(
             input("Significant digits (0 for integer solutions):\n")
         )
@@ -138,13 +131,13 @@ while True:
 
 # run the problem generating loop
 while True:
-    if count % 10 == 9 or count == 0:
-        print(f"--- Problem {count + 1} -------------", end="")
+    if problem_count % 10 == 9 or problem_count == 0:
+        print(f"--- Problem {problem_count + 1} -------------", end="")
     else:
         print("----------------------------", end="")
 
     # initiate a problem instance
-    mode_to_problem_type_mapping = {
+    problem_type_to_problem_object_mapping = {
         "addition": AdditionProblem,
         "subtraction": SubtractionProblem,
         "multiplication": MultiplicationProblem,
@@ -152,30 +145,26 @@ while True:
         "square": SquareProblem,
         "square_root": SquareRootProblem,
     }
-    problem = mode_to_problem_type_mapping[problem_type](
+    # generate a problem based on the selected problem type and other choices
+    problem = problem_type_to_problem_object_mapping[selected_problem_type](
         min=int_min,
         max=int_max,
         significant_digits=significant_digits,
         only_integers=only_integers,
     )
 
-    # start timer
     timer_start = timer()
-
-    # the answer from the user
     input_answer = input(f"{problem} = ")
     check_for_quit(input_answer.lower())
 
-    # check the input - if 's' is detected, stop the loop
+    # check the input - if 's' is detected, stop the game loop
     if input_answer.lower().startswith("s"):
         timer_end = timer()
         del problem
         break
-    # else try to convert the input to integer
     else:
         # try to convert given answer to integer else print message and pose new problem
         try:
-            # input_answer = int(input_answer)
             input_answer = problem.check_user_answer_type(input_answer)
         except ValueError:
             print('Bad input detected - please provide integer numbers or "stop" (s)')
@@ -183,55 +172,50 @@ while True:
             del problem
             continue
 
-            # if provided answer is correct
-        if problem.result == input_answer:
+        answer_is_correct = problem.result == input_answer
+        if answer_is_correct:
             print("Correct\n", end="\n")
             corrects += 1
-        # if it's not correct
         else:
             print("Incorrect\n", end="\n")
 
     # store timing, problem and answer and increment problem count
     timer_end = timer()
     problem.time = timer_end - timer_start
-    count += 1
-    problem_array.append(problem)
+    problem_count += 1
+    problem_list.append(problem)
     problem.answer = input_answer
 
 # compute and print mean response time
-if len(problem_array) > 0:
-    mean_time = np.mean([prob.time for prob in problem_array])
+if len(problem_list) > 0:
+    mean_time = np.mean([prob.time for prob in problem_list])
     print("\n-------------------------------------------", end="\n")
     print("----------------- RESULTS -----------------", end="\n")
     print("-------------------------------------------\n", end="\n")
     print(
-        "{}% correct ({} out of {})".format(
-            np.round(100 * corrects / count, 2), corrects, count
-        )
+        f"{100 * corrects / problem_count:.1f}% correct ({corrects} out of {problem_count})"
     )
-    print("Average response time: ", np.round(np.mean(mean_time), 2), "seconds")
+    print(f"Average response time: {np.mean(mean_time):.2f} seconds")
 
     # turn into a dataset
     df = pd.DataFrame(
         {
-            "time": [prob.time for prob in problem_array],
-            "num1": [prob.num1 for prob in problem_array],
-            "num2": [prob.num2 for prob in problem_array],
-            "result": [prob.result for prob in problem_array],
-            "answer": [prob.answer for prob in problem_array],
-            "date": [prob.date for prob in problem_array],
+            "time": [prob.time for prob in problem_list],
+            "num1": [prob.num1 for prob in problem_list],
+            "num2": [prob.num2 for prob in problem_list],
+            "result": [prob.result for prob in problem_list],
+            "answer": [prob.answer for prob in problem_list],
+            "date": [prob.date for prob in problem_list],
         }
     )
     df["correct"] = [
         1 if diff == 0 else 0 for diff in df.answer - df.result
     ]  # codes it as binary integers
-    df["operation"] = problem_type
+    df["operation"] = selected_problem_type
 else:
     quit()
 
-# if quick start was chosen in the beginning prompt for saving
-if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
-    # print results
+if quick_start_or_with_save_file == "quick" and len(problem_list) > 0:
     df_to_print = pd.DataFrame(
         {
             "mean": np.mean(df["time"]),
@@ -247,19 +231,15 @@ if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
 
     # if yes, print list of already existing csv files in directory to save to
     if input_savefile.lower().startswith("y"):
-        # print an overview of already existing csv files in directory
         print("----------------------------------------")
         print("The following data files were found already:\n")
         while True:
             files = [f for f in os.listdir(training_files_path) if f.endswith(".csv")]
             [print(idx + 1, f) for idx, f in enumerate(files)]
-
-            # prompt the user for a desired file
             file = input("Write the name or number of the file you wish to use:\n")
             # check the given input and convert to integer if a number was given
             try:
                 file = int(file)
-            # exception raised if it is a string input
             except ValueError:
                 # if input is empty ask user to provide a better filename
                 if all(i == " " for i in file):
@@ -286,7 +266,7 @@ if quick_start_or_with_save_file == "quick" and len(problem_array) > 0:
         quit()
 
 # else simply save to the file specified in the beginning
-elif quick_start_or_with_save_file == "savefile" and len(problem_array) > 0:
+elif quick_start_or_with_save_file == "savefile" and len(problem_list) > 0:
     df.to_csv(
         training_files_path + "/" + file, index=False, mode="a", header=not file_exists
     )
@@ -316,7 +296,21 @@ print(df5)
 first = date_arrays[0].time
 last = date_arrays[-1].time
 
-stats.ttest_ind(first, last, equal_var=False)
+t_test = stats.ttest_ind(first, last, equal_var=True)
+significant_difference = t_test.pvalue <= 0.05
+str_to_print = (
+    f"Result: significant difference detected"
+    if significant_difference
+    else "Result: no significant difference detected"
+)
+
+print("\n\n-----------------------------------------------------------------------")
+print("-----------------------------------------------------------------------")
+print("T-test for difference between first and last practice session timings")
+print("-----------------------------------------------------------------------")
+print(f"p-value: {t_test.pvalue:2f}")
+print(str_to_print)
+print("-----------------------------------------------------------------------")
 
 # plot timing distributions
 sns.set(color_codes=True)
