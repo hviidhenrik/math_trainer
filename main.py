@@ -1,5 +1,5 @@
 from math_trainer.core import *
-from math_trainer.helpers import check_for_quit
+from math_trainer.helpers import check_for_quit, calculate_overall_performance_score
 
 import os
 import numpy as np
@@ -172,23 +172,27 @@ while True:
             del problem
             continue
 
-        answer_is_correct = problem.result == input_answer
-        if answer_is_correct:
-            print("Correct\n", end="\n")
+        # store timing, problem and answer and increment problem count
+        timer_end = timer()
+        problem.time = timer_end - timer_start
+        problem_count += 1
+        problem_list.append(problem)
+        problem.answer = input_answer
+        problem.calculate_performance_score()
+
+        if problem.answer_is_correct:
+            print(f"Correct - {problem.time:.2f} seconds\n"
+                  f"Score: {problem.score:.0f}\n", end="\n")
             corrects += 1
         else:
-            print("Incorrect\n", end="\n")
+            print(f"Incorrect - {problem.time:.2f} seconds\n"
+                  f"Score: {problem.score:.0f}\n", end="\n")
 
-    # store timing, problem and answer and increment problem count
-    timer_end = timer()
-    problem.time = timer_end - timer_start
-    problem_count += 1
-    problem_list.append(problem)
-    problem.answer = input_answer
 
 # compute and print mean response time
 if len(problem_list) > 0:
     mean_time = np.mean([prob.time for prob in problem_list])
+    performance_score = calculate_overall_performance_score(problem_list)
     print("\n-------------------------------------------", end="\n")
     print("----------------- RESULTS -----------------", end="\n")
     print("-------------------------------------------\n", end="\n")
@@ -196,6 +200,7 @@ if len(problem_list) > 0:
         f"{100 * corrects / problem_count:.1f}% correct ({corrects} out of {problem_count})"
     )
     print(f"Average response time: {np.mean(mean_time):.2f} seconds")
+    print(f"Overall performance score (0 - 100): {performance_score:.0f}")
 
     # turn into a dataset
     df = pd.DataFrame(

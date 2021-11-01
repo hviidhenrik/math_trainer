@@ -5,7 +5,7 @@ from datetime import date
 class Problem:
     instance_count = 0
 
-    def __init__(self, min: int, max: int, **kwargs):
+    def __init__(self, min: int, max: int, **kwargs) -> None:
         Problem.instance_count += 1
         self.mode_to_operator_string_mapping = {
             "addition": "+",
@@ -20,11 +20,20 @@ class Problem:
         self.min = min
         self.max = max
         self.answer = np.nan  # the user provided answer
-        self.error = np.nan  # how far off the provided answer is
+        self.answer_is_correct = None
+        self.score = None
+        self.error = None  # how far off the provided answer is
         self.time = np.nan  # how long it took to answer
         self.date = date.today().strftime("%b-%d-%Y")
 
-    def _select_and_set_numbers(self):
+    def calculate_performance_score(self, inversion_offset: float = 100) -> None:
+        self.answer_is_correct = self.answer == self.result
+        self.error = abs(self.result - self.answer)
+        score = inversion_offset - (1 + self.error)**2 * self.time**2
+        self.score = max(0, score)
+
+
+    def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
             self.min, self.max + 1
         )  # + 1 because max is exclusive in randint
@@ -33,15 +42,15 @@ class Problem:
             self.operator(self.num1, self.num2), 2
         )  # the correct result
 
-    def __str__(self):
+    def __str__(self) -> str:
         op = self.mode_to_operator_string_mapping[self.problem_type]
         return f"{self.num1} {op} {self.num2}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         op = self.mode_to_operator_string_mapping[self.problem_type]
         return f"{self.num1} {op} {self.num2}"
 
-    def __del__(self):
+    def __del__(self) -> None:
         Problem.instance_count -= 1
 
     def check_user_answer_type(self, user_answer):
@@ -49,7 +58,7 @@ class Problem:
 
 
 class AdditionProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs):
+    def __init__(self, min: int, max: int, **kwargs) -> None:
         super().__init__(min, max)
         self.operator = np.add
         self.problem_type = "addition"
@@ -58,14 +67,14 @@ class AdditionProblem(Problem):
 
 
 class SubtractionProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs):
+    def __init__(self, min: int, max: int, **kwargs) -> None:
         super().__init__(min, max)
         self.operator = np.subtract
         self.problem_type = "subtraction"
         self.answer_type = int
         self._select_and_set_numbers()
 
-    def _select_and_set_numbers(self):
+    def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
             self.min, self.max + 1
         )  # + 1 because max is exclusive in randint
@@ -78,7 +87,7 @@ class SubtractionProblem(Problem):
 
 
 class MultiplicationProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs):
+    def __init__(self, min: int, max: int, **kwargs) -> None:
         super().__init__(min, max)
         self.operator = np.multiply
         self.problem_type = "multiplication"
@@ -94,7 +103,7 @@ class DivisionProblem(Problem):
             significant_digits: int = 1,
             only_integers: bool = False,
             **kwargs,
-    ):
+    ) -> None:
         super().__init__(min, max)
         self.operator = np.divide
         self.problem_type = "division"
@@ -103,7 +112,7 @@ class DivisionProblem(Problem):
         self.significant_digits = significant_digits
         self._select_and_set_numbers()
 
-    def _select_and_set_numbers(self):
+    def _select_and_set_numbers(self) -> None:
         # prevent division by zero
         if self.min == 0:
             self.min += 1
@@ -129,14 +138,14 @@ class DivisionProblem(Problem):
 
 
 class SquareProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs):
+    def __init__(self, min: int, max: int, **kwargs) -> None:
         super().__init__(min, max)
         self.operator = np.multiply
         self.problem_type = "square"
         self.answer_type = int
         self._select_and_set_numbers()
 
-    def _select_and_set_numbers(self):
+    def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
             self.min, self.max + 1
         )  # + 1 because max is exclusive in randint
@@ -147,7 +156,7 @@ class SquareProblem(Problem):
 
 
 class SquareRootProblem(Problem):
-    def __init__(self, min: int, max: int, significant_digits: int = 1, **kwargs):
+    def __init__(self, min: int, max: int, significant_digits: int = 1, **kwargs) -> None:
         assert max >= min >= 0, "Minimum for square root problems must be positive or 0"
         super().__init__(min, max)
         self.operator = np.sqrt
@@ -156,7 +165,7 @@ class SquareRootProblem(Problem):
         self.significant_digits = significant_digits
         self._select_and_set_numbers()
 
-    def _select_and_set_numbers(self):
+    def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
             self.min, self.max + 1
         )  # + 1 because max is exclusive in randint
@@ -165,8 +174,8 @@ class SquareRootProblem(Problem):
             self.operator(self.num1), self.significant_digits
         )  # the correct result
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"sqrt({self.num1})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"sqrt({self.num1})"

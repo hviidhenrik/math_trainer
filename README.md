@@ -27,10 +27,6 @@ as listed below:
 - implement "mixed mode" which poses a random mix of selected problem types
 - implement percentage approximation mode. The approximation error could 
   then be used instead of binary correct/incorrect as measure of performance
-- make a unified performance score. Could just be the average of the response times t_i weighted by 
-  1 if incorrect and -1 if correct, call this s_i. Invert this by subtracting each of these products
-  from the max: max_i(s_i * t_i) - s_i * t_i. To aggregate into a single number, simply average it.
-- make response time appear below the "correct/incorrect" feedback of each problem.  
 - make graphical interface (probably never gonna happen)
 - make text-to-speech so problems are read aloud better simulating a 
   day to day example situation of mental math 
