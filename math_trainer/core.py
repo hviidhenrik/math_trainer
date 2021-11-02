@@ -1,12 +1,19 @@
+import os
 from datetime import date
+from timeit import default_timer as timer
 
 import numpy as np
+from gtts import gTTS
+from playsound import playsound
+
+from config.definitions import *
+from math_trainer.helpers import check_for_quit
 
 
 class Problem:
     instance_count = 0
 
-    def __init__(self, min: int, max: int, **kwargs) -> None:
+    def __init__(self, min: int, max: int, text_or_aloud: str, **kwargs) -> None:
         Problem.instance_count += 1
         self.mode_to_operator_string_mapping = {
             "addition": "+",
@@ -16,6 +23,7 @@ class Problem:
             "square": "x",
         }
         self.problem_type = None
+        self.text_or_aloud = text_or_aloud
         self.operator = None
         self.answer_type = None
         self.min = min
@@ -59,7 +67,7 @@ class Problem:
 
 class AdditionProblem(Problem):
     def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.add
         self.problem_type = "addition"
         self.answer_type = int
@@ -68,7 +76,7 @@ class AdditionProblem(Problem):
 
 class SubtractionProblem(Problem):
     def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.subtract
         self.problem_type = "subtraction"
         self.answer_type = int
@@ -88,7 +96,7 @@ class SubtractionProblem(Problem):
 
 class MultiplicationProblem(Problem):
     def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.multiply
         self.problem_type = "multiplication"
         self.answer_type = int
@@ -104,7 +112,7 @@ class DivisionProblem(Problem):
             only_integers: bool = False,
             **kwargs,
     ) -> None:
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.divide
         self.problem_type = "division"
         self.answer_type = float
@@ -139,7 +147,7 @@ class DivisionProblem(Problem):
 
 class SquareProblem(Problem):
     def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.multiply
         self.problem_type = "square"
         self.answer_type = int
@@ -158,7 +166,7 @@ class SquareProblem(Problem):
 class SquareRootProblem(Problem):
     def __init__(self, min: int, max: int, significant_digits: int = 1, **kwargs) -> None:
         assert max >= min >= 0, "Minimum for square root problems must be positive or 0"
-        super().__init__(min, max)
+        super().__init__(min, max, **kwargs)
         self.operator = np.sqrt
         self.problem_type = "square_root"
         self.answer_type = float
@@ -179,3 +187,95 @@ class SquareRootProblem(Problem):
 
     def __repr__(self) -> str:
         return f"sqrt({self.num1})"
+
+
+class ProblemGenerator:
+    def __init__(self, problem_type: str, **kwargs) -> None:
+        self.problem_type = problem_type
+        self.problem_type_to_problem_object_mapping = {
+            "addition": AdditionProblem,
+            "subtraction": SubtractionProblem,
+            "multiplication": MultiplicationProblem,
+            "division": DivisionProblem,
+            "square": SquareProblem,
+            "square_root": SquareRootProblem,
+        }
+        self.problem_arguments = kwargs
+
+    def generate_problem(self):
+        # generate a problem based on the selected problem type and other choices
+        return self.problem_type_to_problem_object_mapping[self.problem_type](**self.problem_arguments)
+
+
+class ProblemReader:
+    def __init__(self, problem: Problem, path: Path):
+        self.problem_path = path / "temp_problem.mp3"
+        self.problem = problem
+        self.operator_string_to_speech_mapping = {
+            "addition": "plus",
+            "subtraction": "minus",
+            "multiplication": "gange",
+            "division": "divideret med"
+        }
+        self.problem_text_to_be_read = self._format_string_for_speech()
+        tts = gTTS(self.problem_text_to_be_read, lang="da")
+        tts.save(str(self.problem_path))
+
+    def read_problem_aloud(self):
+        playsound(str(self.problem_path))
+        os.remove(self.problem_path)
+
+    def _format_string_for_speech(self):
+        problem_type = self.problem.problem_type
+        if problem_type == "square":
+            text = f"{self.problem.num1} i anden"
+        elif problem_type == "square_root":
+            text = f"Kvadratroden af {self.problem.num1}"
+        else:
+            text = f"{self.problem.num1} {self.operator_string_to_speech_mapping[problem_type]} {self.problem.num2}"
+        return text
+
+
+class ProblemIO:
+    def __init__(self, problem: Problem):
+        self.problem = problem
+        pass
+
+    def print_problem(self):
+        if self.problem.text_or_aloud == "aloud":
+            ProblemReader(self.problem, AUDIO_FILES_PATH).read_problem_aloud()
+            print(f"\nAnswer: ", end="")
+        else:
+            print(f"{self.problem} = ", end="")
+        self.problem.time = timer()
+
+    def take_problem_answer_as_input(self):
+        input_answer = input()
+        self.problem.time = timer() - self.problem.time
+        check_for_quit(input_answer.lower())
+
+        # check the input - if 's' is detected, stop the game loop
+        is_done_playing = False
+        if input_answer.lower().startswith("s"):
+            Problem.instance_count -= 1
+            is_done_playing = True
+
+        else:
+            # try to convert given answer to integer else print message and pose new problem
+            try:
+                input_answer = self.problem.check_user_answer_type(input_answer)
+            except ValueError:
+                print("Bad input detected - please provide integer numbers or \"stop\" (s)\n")
+                Problem.instance_count -= 1
+
+            self.problem.answer = input_answer
+            self.problem.calculate_performance_score()
+        return is_done_playing
+
+    def print_feedback_on_answer(self):
+        if self.problem.answer_is_correct:
+            print(f"Correct - {self.problem.time:.2f} seconds\n"
+                  f"Score: {self.problem.score:.0f}\n", end="\n")
+        else:
+            print(f"Incorrect - {self.problem.time:.2f} seconds\n"
+                  f"Score: {self.problem.score:.0f}\n", end="\n")

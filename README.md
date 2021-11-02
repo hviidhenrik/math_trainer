@@ -28,5 +28,3 @@ as listed below:
 - implement percentage approximation mode
 - implement linear equation solving mode (e.g. 3 + x = 5, find x)  
 - make graphical interface (probably never gonna happen)
-- make text-to-speech so problems are read aloud better simulating a 
-  day to day example situation of mental math 
