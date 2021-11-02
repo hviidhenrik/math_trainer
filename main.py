@@ -89,6 +89,8 @@ while True:
     print("[4] Division")
     print("[5] Square")
     print("[6] Square root approximation")
+    print("[7] Time difference in hours")
+
 
     selected_problem_type = input("Your choice: ")
     check_for_quit(selected_problem_type.lower())
@@ -102,6 +104,7 @@ while True:
         "4": "division",
         "5": "square",
         "6": "square_root",
+        "7": "time_difference"
     }
 
     # validate input and prompt user again if erroneous input was detected
@@ -116,8 +119,12 @@ while True:
 # get upper and lower limits of the math problems to be posed
 while True:
     print("----- Problem limits -----")
-    int_min = input("Lowest possible integer: ")
-    int_max = input("Highest possible integer: ")
+    if selected_problem_type == "time_difference":
+        int_min = input("Lowest possible time difference: ")
+        int_max = input("Highest possible time difference: ")
+    else:
+        int_min = input("Lowest possible integer: ")
+        int_max = input("Highest possible integer: ")
 
     check_for_quit([int_min.lower(), int_max.lower()])
 
@@ -154,8 +161,8 @@ while True:
     # generate a problem with given parameters
     problem_generator = ProblemGenerator(problem_type=selected_problem_type,
                                          text_or_aloud=game_mode_as_text_or_aloud,
-                                         min=int_min,
-                                         max=int_max,
+                                         int_min=int_min,
+                                         int_max=int_max,
                                          significant_digits=significant_digits,
                                          only_integers=only_integers)
     problem = problem_generator.generate_problem()

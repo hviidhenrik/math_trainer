@@ -13,7 +13,7 @@ from math_trainer.helpers import check_for_quit
 class Problem:
     instance_count = 0
 
-    def __init__(self, min: int, max: int, text_or_aloud: str, **kwargs) -> None:
+    def __init__(self, int_min: int, int_max: int, text_or_aloud: str, **kwargs) -> None:
         Problem.instance_count += 1
         self.mode_to_operator_string_mapping = {
             "addition": "+",
@@ -26,8 +26,8 @@ class Problem:
         self.text_or_aloud = text_or_aloud
         self.operator = None
         self.answer_type = None
-        self.min = min
-        self.max = max
+        self.int_min = int_min
+        self.int_max = int_max
         self.answer = np.nan  # the user provided answer
         self.answer_is_correct = None
         self.score = None
@@ -43,9 +43,9 @@ class Problem:
 
     def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
-            self.min, self.max + 1
+            self.int_min, self.int_max + 1
         )  # + 1 because max is exclusive in randint
-        self.num2 = np.random.randint(self.min, self.max + 1)
+        self.num2 = np.random.randint(self.int_min, self.int_max + 1)
         self.result = np.round(
             self.operator(self.num1, self.num2), 2
         )  # the correct result
@@ -66,8 +66,8 @@ class Problem:
 
 
 class AdditionProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max, **kwargs)
+    def __init__(self, int_min: int, int_max: int, **kwargs) -> None:
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.add
         self.problem_type = "addition"
         self.answer_type = int
@@ -75,8 +75,8 @@ class AdditionProblem(Problem):
 
 
 class SubtractionProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max, **kwargs)
+    def __init__(self, int_min: int, int_max: int, **kwargs) -> None:
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.subtract
         self.problem_type = "subtraction"
         self.answer_type = int
@@ -84,10 +84,10 @@ class SubtractionProblem(Problem):
 
     def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
-            self.min, self.max + 1
+            self.int_min, self.int_max + 1
         )  # + 1 because max is exclusive in randint
         self.num2 = np.random.randint(
-            self.min, self.num1 + 1
+            self.int_min, self.num1 + 1
         )  # ensure num2 is always less than num1 for subtraction
         self.result = np.round(
             self.operator(self.num1, self.num2), 2
@@ -95,8 +95,8 @@ class SubtractionProblem(Problem):
 
 
 class MultiplicationProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max, **kwargs)
+    def __init__(self, int_min: int, int_max: int, **kwargs) -> None:
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.multiply
         self.problem_type = "multiplication"
         self.answer_type = int
@@ -106,13 +106,13 @@ class MultiplicationProblem(Problem):
 class DivisionProblem(Problem):
     def __init__(
             self,
-            min: int,
-            max: int,
+            int_min: int,
+            int_max: int,
             significant_digits: int = 1,
             only_integers: bool = False,
             **kwargs,
     ) -> None:
-        super().__init__(min, max, **kwargs)
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.divide
         self.problem_type = "division"
         self.answer_type = float
@@ -122,20 +122,20 @@ class DivisionProblem(Problem):
 
     def _select_and_set_numbers(self) -> None:
         # prevent division by zero
-        if self.min == 0:
-            self.min += 1
+        if self.int_min == 0:
+            self.int_min += 1
 
         num1 = np.random.randint(
-            self.min, self.max + 1
+            self.int_min, self.int_max + 1
         )  # + 1 because max is exclusive in randint
-        num2 = np.random.randint(self.min, self.max + 1)
+        num2 = np.random.randint(self.int_min, self.int_max + 1)
 
         if self.only_integers:
             # keep sampling a new number for num2 until the resulting ratio is integer
             result_is_integer = np.divide(num1, num2) % 1 == 0
             if not result_is_integer:
                 while not result_is_integer:
-                    num2 = np.random.randint(self.min, self.max + 1)
+                    num2 = np.random.randint(self.int_min, self.int_max + 1)
                     result_is_integer = np.divide(num1, num2) % 1 == 0
 
         self.num1 = num1
@@ -146,8 +146,8 @@ class DivisionProblem(Problem):
 
 
 class SquareProblem(Problem):
-    def __init__(self, min: int, max: int, **kwargs) -> None:
-        super().__init__(min, max, **kwargs)
+    def __init__(self, int_min: int, int_max: int, **kwargs) -> None:
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.multiply
         self.problem_type = "square"
         self.answer_type = int
@@ -155,7 +155,7 @@ class SquareProblem(Problem):
 
     def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
-            self.min, self.max + 1
+            self.int_min, self.int_max + 1
         )  # + 1 because max is exclusive in randint
         self.num2 = self.num1
         self.result = np.round(
@@ -164,9 +164,9 @@ class SquareProblem(Problem):
 
 
 class SquareRootProblem(Problem):
-    def __init__(self, min: int, max: int, significant_digits: int = 1, **kwargs) -> None:
-        assert max >= min >= 0, "Minimum for square root problems must be positive or 0"
-        super().__init__(min, max, **kwargs)
+    def __init__(self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs) -> None:
+        assert int_max >= int_min >= 0, "Minimum for square root problems must be positive or 0"
+        super().__init__(int_min, int_max, **kwargs)
         self.operator = np.sqrt
         self.problem_type = "square_root"
         self.answer_type = float
@@ -175,7 +175,7 @@ class SquareRootProblem(Problem):
 
     def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(
-            self.min, self.max + 1
+            self.int_min, self.int_max + 1
         )  # + 1 because max is exclusive in randint
         self.num2 = None
         self.result = np.round(
@@ -189,6 +189,39 @@ class SquareRootProblem(Problem):
         return f"sqrt({self.num1})"
 
 
+class TimeDifferenceProblem(Problem):
+    def __init__(self, int_min: int = 1, int_max: int = 24, **kwargs) -> None:
+        super().__init__(int_min=int_min,
+                         int_max=int_max, **kwargs)
+        self.min_time_difference = int_min
+        self.max_time_difference = int_max
+        assert 0 < self.min_time_difference < self.max_time_difference < 24, "Time difference must be minimum 1 and max 23 hours"
+        self.operator = None
+        self.problem_type = "time_difference"
+        self.answer_type = int
+        self._select_and_set_numbers()
+
+    def _select_and_set_numbers(self) -> None:
+        num1 = np.random.randint(0, 23 + 1)  # + 1 because max is exclusive in randint
+
+        # keep sampling a new number for num2 until the resulting ratio is integer
+        result_is_in_allowable_range = False
+        while not result_is_in_allowable_range:
+            num2 = np.random.randint(0, 23 + 1)
+            time_diff = abs(num1 - num2) % 24
+            result_is_in_allowable_range = self.min_time_difference <= time_diff <= self.max_time_difference
+
+        self.num1 = min((num1, num2))
+        self.num2 = max((num1, num2))
+        self.result = self.num2 - self.num1 % 24
+
+    def __str__(self) -> str:
+        return f"Hours between {self.num1} and {self.num2}"
+
+    def __repr__(self) -> str:
+        return f"Hours between {self.num1} and {self.num2}"
+
+
 class ProblemGenerator:
     def __init__(self, problem_type: str, **kwargs) -> None:
         self.problem_type = problem_type
@@ -199,6 +232,7 @@ class ProblemGenerator:
             "division": DivisionProblem,
             "square": SquareProblem,
             "square_root": SquareRootProblem,
+            "time_difference": TimeDifferenceProblem
         }
         self.problem_arguments = kwargs
 
@@ -231,6 +265,8 @@ class ProblemReader:
             text = f"{self.problem.num1} i anden"
         elif problem_type == "square_root":
             text = f"Kvadratroden af {self.problem.num1}"
+        elif problem_type == "time_difference":
+            text = f"Timer mellem {self.problem.num1} og {self.problem.num2}"
         else:
             text = f"{self.problem.num1} {self.operator_string_to_speech_mapping[problem_type]} {self.problem.num2}"
         return text
