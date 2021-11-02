@@ -22,8 +22,8 @@ New types of problems are added every now and then, when
 I feel like it. The current back log of things to do is 
 as listed below:
 
-- implement time difference mode, e.g. hours between 22 and 8
 - implement log approximation mode
+- make text to speech mode able to pose problems in English (currently only Danish)  
 - implement "mixed mode" which poses a random mix of selected problem types
 - implement percentage approximation mode
 - implement linear equation solving mode (e.g. 3 + x = 5, find x)  
