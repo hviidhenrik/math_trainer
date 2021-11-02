@@ -25,8 +25,8 @@ as listed below:
 - implement time difference mode, e.g. hours between 22 and 8
 - implement log approximation mode
 - implement "mixed mode" which poses a random mix of selected problem types
-- implement percentage approximation mode. The approximation error could 
-  then be used instead of binary correct/incorrect as measure of performance
+- implement percentage approximation mode
+- implement linear equation solving mode (e.g. 3 + x = 5, find x)  
 - make graphical interface (probably never gonna happen)
 - make text-to-speech so problems are read aloud better simulating a 
   day to day example situation of mental math 

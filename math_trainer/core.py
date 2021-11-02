@@ -1,5 +1,6 @@
-import numpy as np
 from datetime import date
+
+import numpy as np
 
 
 class Problem:
@@ -29,9 +30,8 @@ class Problem:
     def calculate_performance_score(self, inversion_offset: float = 100) -> None:
         self.answer_is_correct = self.answer == self.result
         self.error = abs(self.result - self.answer)
-        score = inversion_offset - (1 + self.error)**2 * self.time**2
+        score = inversion_offset - (1 + self.error) ** 2 * self.time ** 2
         self.score = max(0, score)
-
 
     def _select_and_set_numbers(self) -> None:
         self.num1 = np.random.randint(

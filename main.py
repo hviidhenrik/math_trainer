@@ -1,5 +1,6 @@
 from math_trainer.core import *
 from math_trainer.helpers import check_for_quit, calculate_overall_performance_score
+from math_trainer.definitions import *
 
 import os
 import numpy as np
@@ -8,8 +9,6 @@ import pandas as pd
 from scipy import stats
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-training_files_path = "./training_files"
 
 print("WELCOME TO MATH TRAINER v1.2")
 print("----------------------------")
@@ -211,12 +210,11 @@ if len(problem_list) > 0:
             "result": [prob.result for prob in problem_list],
             "answer": [prob.answer for prob in problem_list],
             "date": [prob.date for prob in problem_list],
+            "correct": [prob.answer_is_correct for prob in problem_list],
+            "score": [prob.score for prob in problem_list],
+            "problem_type": [prob.problem_type for prob in problem_list]
         }
     )
-    df["correct"] = [
-        1 if diff == 0 else 0 for diff in df.answer - df.result
-    ]  # codes it as binary integers
-    df["operation"] = selected_problem_type
 else:
     quit()
 
@@ -280,7 +278,7 @@ df1 = pd.read_csv(training_files_path + "/" + file)
 
 # mean and standard deviation analysis of response times
 dates = df1.date.unique()
-date_arrays = [df1[df1["date"] == date][["time", "date"]] for date in dates]
+date_arrays = [df1[df1["date"] == date][["time", "score", "date"]] for date in dates]
 
 # print mean and sd
 df5 = pd.DataFrame(
@@ -289,11 +287,12 @@ df5 = pd.DataFrame(
             np.mean(dates.time),
             np.median(dates.time),
             np.std(dates.time),
+            np.mean(dates.score),
             dates.date.unique(),
         )
         for dates in date_arrays
     ],
-    columns=["mean", "median", "sd", "date"],
+    columns=["mean", "median", "sd", "score", "date"],
 )
 print(df5)
 

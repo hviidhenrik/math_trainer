@@ -1,0 +1,1 @@
+training_files_path = "./training_files"
