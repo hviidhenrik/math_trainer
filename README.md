@@ -23,9 +23,12 @@ I feel like it. The current back log of things to do is
 as listed below:
 
 - implement log approximation mode
-- make text to speech mode able to pose problems in English (currently only Danish) 
+- make text to speech mode able to pose problems in English (currently only Danish)
+- fix exit error when pressing enter without any problem answer
 - implement multiplication tables mode  
 - implement "mixed mode" which poses a random mix of selected problem types
 - implement percentage approximation mode
-- implement linear equation solving mode (e.g. 3 + x = 5, find x)  
+- implement linear equation solving mode (e.g. 3 + x = 5, find x)
+- make questions that were incorrect more likely to be posed again (like boosting) until correct  
+- make time series plot of historical response times or scores from data frames  
 - make graphical interface (probably never gonna happen)

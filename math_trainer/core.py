@@ -304,6 +304,7 @@ class ProblemIO:
                 print("Bad input detected - please provide integer numbers or \"stop\" (s)\n")
                 Problem.instance_count -= 1
 
+            # TODO fix exit bug here if empty input
             self.problem.answer = input_answer
             self.problem.calculate_performance_score()
         return is_done_playing
