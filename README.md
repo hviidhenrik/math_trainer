@@ -30,5 +30,6 @@ as listed below:
 - implement percentage approximation mode
 - implement linear equation solving mode (e.g. 3 + x = 5, find x)
 - make questions that were incorrect more likely to be posed again (like boosting) until correct  
-- make time series plot of historical response times or scores from data frames  
+- make time series plot of historical response times or scores from data frames
+- make some unit tests  
 - make graphical interface (probably never gonna happen)
