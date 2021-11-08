@@ -244,6 +244,8 @@ class ProblemGenerator:
 class ProblemReader:
     def __init__(self, problem: Problem, path: Path):
         self.problem_path = path / "temp_problem.mp3"
+        if not "audio_files" in os.listdir():
+            os.mkdir("audio_files")
         self.problem = problem
         self.operator_string_to_speech_mapping = {
             "addition": "plus",

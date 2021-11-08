@@ -1,4 +1,8 @@
 .idea/
 backups/
 archived/
+audio_files/
 __pycache__/
+
+# files
+*.csv
