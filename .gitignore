@@ -5,4 +5,4 @@ audio_files/
 __pycache__/
 
 # files
-*.csv
+# *.csv

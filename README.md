@@ -25,6 +25,9 @@ as listed below:
 - implement log approximation mode
 - make text to speech mode able to pose problems in English (currently only Danish)
 - fix exit error when pressing enter without any problem answer
+- fix exit error when entering e.g. "323y" as input to a problem
+- make saved dataframe store number of posed questions as there seems to be a slight fatigue
+  when doing many questions versus a few, which pulls up mean time slightly
 - implement multiplication tables mode  
 - implement "mixed mode" which poses a random mix of selected problem types
 - implement percentage approximation mode
