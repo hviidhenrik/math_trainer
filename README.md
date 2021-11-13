@@ -9,7 +9,7 @@ the purpose of this Python program was twofold:
 
 However, nowadays I've learned Python much more through my 
 work, so the purpose is now just to train my mental math 
-abilities. 
+abilities and have fun developing this project further.
 
 The program is easy to use. Simply run main.py and the 
 prompt will guide you through the rest of the process 
@@ -24,8 +24,6 @@ as listed below:
 
 - implement log approximation mode
 - make text to speech mode able to pose problems in English (currently only Danish)
-- fix exit error when pressing enter without any problem answer
-- fix exit error when entering e.g. "323y" as input to a problem
 - make saved dataframe store number of posed questions as there seems to be a slight fatigue
   when doing many questions versus a few, which pulls up mean time slightly
 - implement multiplication tables mode  

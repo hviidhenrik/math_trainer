@@ -73,7 +73,9 @@ while True:
 
     # validate input and prompt user again if erroneous input was detected
     try:
-        game_mode_as_text_or_aloud = "text" if int(game_mode_as_text_or_aloud) == 1 else "aloud"
+        game_mode_as_text_or_aloud = (
+            "text" if int(game_mode_as_text_or_aloud) == 1 else "aloud"
+        )
     except (KeyError, ValueError):
         print("Bad input detected. Must be either 1 or 2: \n")
         continue
@@ -91,7 +93,6 @@ while True:
     print("[6] Square root approximation")
     print("[7] Time difference in hours")
 
-
     selected_problem_type = input("Your choice: ")
     check_for_quit(selected_problem_type.lower())
 
@@ -104,7 +105,7 @@ while True:
         "4": "division",
         "5": "square",
         "6": "square_root",
-        "7": "time_difference"
+        "7": "time_difference",
     }
 
     # validate input and prompt user again if erroneous input was detected
@@ -159,12 +160,14 @@ while True:
         print("----------------------------", end="")
 
     # generate a problem with given parameters
-    problem_generator = ProblemGenerator(problem_type=selected_problem_type,
-                                         text_or_aloud=game_mode_as_text_or_aloud,
-                                         int_min=int_min,
-                                         int_max=int_max,
-                                         significant_digits=significant_digits,
-                                         only_integers=only_integers)
+    problem_generator = ProblemGenerator(
+        problem_type=selected_problem_type,
+        text_or_aloud=game_mode_as_text_or_aloud,
+        int_min=int_min,
+        int_max=int_max,
+        significant_digits=significant_digits,
+        only_integers=only_integers,
+    )
     problem = problem_generator.generate_problem()
 
     # present the problem
@@ -204,7 +207,7 @@ if len(problem_list) > 0:
             "correct": [prob.answer_is_correct for prob in problem_list],
             "score": [prob.score for prob in problem_list],
             "problem_type": [prob.problem_type for prob in problem_list],
-            "text_or_aloud": [prob.text_or_aloud for prob in problem_list]
+            "text_or_aloud": [prob.text_or_aloud for prob in problem_list],
         }
     )
 else:
@@ -262,9 +265,7 @@ if quick_start_or_with_save_file == "quick" and len(problem_list) > 0:
 
 # else simply save to the file specified in the beginning
 elif quick_start_or_with_save_file == "savefile" and len(problem_list) > 0:
-    df.to_csv(
-        TRAINING_FILES_PATH / file, index=False, mode="a", header=not file_exists
-    )
+    df.to_csv(TRAINING_FILES_PATH / file, index=False, mode="a", header=not file_exists)
 
 df1 = pd.read_csv(TRAINING_FILES_PATH / file)
 

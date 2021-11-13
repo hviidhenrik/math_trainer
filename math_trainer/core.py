@@ -13,7 +13,9 @@ from math_trainer.helpers import check_for_quit
 class Problem:
     instance_count = 0
 
-    def __init__(self, int_min: int, int_max: int, text_or_aloud: str, **kwargs) -> None:
+    def __init__(
+        self, int_min: int, int_max: int, text_or_aloud: str, **kwargs
+    ) -> None:
         Problem.instance_count += 1
         self.mode_to_operator_string_mapping = {
             "addition": "+",
@@ -105,12 +107,12 @@ class MultiplicationProblem(Problem):
 
 class DivisionProblem(Problem):
     def __init__(
-            self,
-            int_min: int,
-            int_max: int,
-            significant_digits: int = 1,
-            only_integers: bool = False,
-            **kwargs,
+        self,
+        int_min: int,
+        int_max: int,
+        significant_digits: int = 1,
+        only_integers: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(int_min, int_max, **kwargs)
         self.operator = np.divide
@@ -164,8 +166,12 @@ class SquareProblem(Problem):
 
 
 class SquareRootProblem(Problem):
-    def __init__(self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs) -> None:
-        assert int_max >= int_min >= 0, "Minimum for square root problems must be positive or 0"
+    def __init__(
+        self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs
+    ) -> None:
+        assert (
+            int_max >= int_min >= 0
+        ), "Minimum for square root problems must be positive or 0"
         super().__init__(int_min, int_max, **kwargs)
         self.operator = np.sqrt
         self.problem_type = "square_root"
@@ -191,11 +197,12 @@ class SquareRootProblem(Problem):
 
 class TimeDifferenceProblem(Problem):
     def __init__(self, int_min: int = 1, int_max: int = 24, **kwargs) -> None:
-        super().__init__(int_min=int_min,
-                         int_max=int_max, **kwargs)
+        super().__init__(int_min=int_min, int_max=int_max, **kwargs)
         self.min_time_difference = int_min
         self.max_time_difference = int_max
-        assert 0 < self.min_time_difference < self.max_time_difference < 24, "Time difference must be minimum 1 and max 23 hours"
+        assert (
+            0 < self.min_time_difference < self.max_time_difference < 24
+        ), "Time difference must be minimum 1 and max 23 hours"
         self.operator = None
         self.problem_type = "time_difference"
         self.answer_type = int
@@ -209,7 +216,9 @@ class TimeDifferenceProblem(Problem):
         while not result_is_in_allowable_range:
             num2 = np.random.randint(0, 23 + 1)
             time_diff = abs(num1 - num2) % 24
-            result_is_in_allowable_range = self.min_time_difference <= time_diff <= self.max_time_difference
+            result_is_in_allowable_range = (
+                self.min_time_difference <= time_diff <= self.max_time_difference
+            )
 
         self.num1 = min((num1, num2))
         self.num2 = max((num1, num2))
@@ -232,13 +241,15 @@ class ProblemGenerator:
             "division": DivisionProblem,
             "square": SquareProblem,
             "square_root": SquareRootProblem,
-            "time_difference": TimeDifferenceProblem
+            "time_difference": TimeDifferenceProblem,
         }
         self.problem_arguments = kwargs
 
     def generate_problem(self):
         # generate a problem based on the selected problem type and other choices
-        return self.problem_type_to_problem_object_mapping[self.problem_type](**self.problem_arguments)
+        return self.problem_type_to_problem_object_mapping[self.problem_type](
+            **self.problem_arguments
+        )
 
 
 class ProblemReader:
@@ -251,7 +262,7 @@ class ProblemReader:
             "addition": "plus",
             "subtraction": "minus",
             "multiplication": "gange",
-            "division": "divideret med"
+            "division": "divideret med",
         }
         self.problem_text_to_be_read = self._format_string_for_speech()
         tts = gTTS(self.problem_text_to_be_read, lang="da")
@@ -288,33 +299,42 @@ class ProblemIO:
         self.problem.time = timer()
 
     def take_problem_answer_as_input(self):
-        input_answer = input()
-        self.problem.time = timer() - self.problem.time
-        check_for_quit(input_answer.lower())
-
-        # check the input - if 's' is detected, stop the game loop
+        invalid_answer_given = True
         is_done_playing = False
-        if input_answer.lower().startswith("s"):
-            Problem.instance_count -= 1
-            is_done_playing = True
+        while invalid_answer_given:
+            input_answer = input()
+            self.problem.time = timer() - self.problem.time
+            check_for_quit(input_answer.lower())
 
-        else:
-            # try to convert given answer to integer else print message and pose new problem
-            try:
-                input_answer = self.problem.check_user_answer_type(input_answer)
-            except ValueError:
-                print("Bad input detected - please provide integer numbers or \"stop\" (s)\n")
+            # check the input - if 's' is detected, stop the game loop
+            if input_answer.lower().startswith("s"):
                 Problem.instance_count -= 1
+                is_done_playing = True
+                break
 
-            # TODO fix exit bug here if empty input
-            self.problem.answer = input_answer
-            self.problem.calculate_performance_score()
+            else:
+                # try to convert given answer to integer else print message and pose new problem
+                try:
+                    input_answer = self.problem.check_user_answer_type(input_answer)
+                    invalid_answer_given = False
+                    self.problem.answer = input_answer
+                    self.problem.calculate_performance_score()
+                except ValueError:
+                    print(
+                        'Bad input detected - please provide integer numbers or "stop" (s)\n'
+                    )
         return is_done_playing
 
     def print_feedback_on_answer(self):
         if self.problem.answer_is_correct:
-            print(f"Correct - {self.problem.time:.2f} seconds\n"
-                  f"Score: {self.problem.score:.0f}\n", end="\n")
+            print(
+                f"Correct - {self.problem.time:.2f} seconds\n"
+                f"Score: {self.problem.score:.0f}\n",
+                end="\n",
+            )
         else:
-            print(f"Incorrect - {self.problem.time:.2f} seconds\n"
-                  f"Score: {self.problem.score:.0f}\n", end="\n")
+            print(
+                f"Incorrect - {self.problem.time:.2f} seconds\n"
+                f"Score: {self.problem.score:.0f}\n",
+                end="\n",
+            )
