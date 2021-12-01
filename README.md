@@ -22,6 +22,7 @@ New types of problems are added every now and then, when
 I feel like it. The current back log of things to do is 
 as listed below:
 
+- implement general approximation of otherwise "difficult" problems, e.g. large multiplication problems
 - implement log approximation mode
 - make text to speech mode able to pose problems in English (currently only Danish)
 - make saved dataframe store number of posed questions as there seems to be a slight fatigue
