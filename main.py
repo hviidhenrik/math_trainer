@@ -8,7 +8,7 @@ from math_trainer.helpers import check_for_quit, calculate_overall_performance_s
 
 print("WELCOME TO MATH TRAINER v1.2")
 print("----------------------------")
-print("How would you like to play?\n")
+print("How would you like to play?\n") #
 
 while True:
     print("[1] Quick start")
