@@ -6,7 +6,7 @@ from scipy import stats
 from math_trainer.core import *
 from math_trainer.helpers import check_for_quit, calculate_overall_performance_score
 
-print("WELCOME TO MATH TRAINER v1.2") #
+print("WELCOME TO MATH TRAINER v1.2")
 print("----------------------------")
 print("How would you like to play?\n")
 
