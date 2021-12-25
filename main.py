@@ -91,7 +91,8 @@ while True:
     print("[4] Division")
     print("[5] Square")
     print("[6] Square root approximation")
-    print("[7] Time difference in hours")
+    print("[7] Natural Logarithm approximation")
+    print("[8] Time difference in hours")
 
     selected_problem_type = input("Your choice: ")
     check_for_quit(selected_problem_type.lower())
@@ -105,14 +106,15 @@ while True:
         "4": "division",
         "5": "square",
         "6": "square_root",
-        "7": "time_difference",
+        "7": "logarithm",
+        "8": "time_difference",
     }
 
     # validate input and prompt user again if erroneous input was detected
     try:
         selected_problem_type = input_to_problem_type_mapping[selected_problem_type]
     except KeyError:
-        print("Bad input detected. Must be either 1, 2, 3, 4, 5 or 6 as below: \n")
+        print("Bad input detected. Must be either 1, 2, 3, 4, 5, 6, 7 or 8 as below: \n")
         continue
     else:
         break
@@ -134,7 +136,7 @@ while True:
         only_integers = input("Integer results only? [y/n]:\n")
         only_integers = True if "y" in only_integers.lower() else False
     significant_digits = 0
-    if selected_problem_type in ["division", "square_root"] and not only_integers:
+    if selected_problem_type in ["division", "square_root", "logarithm"] and not only_integers:
         significant_digits = int(
             input("Significant digits (0 for integer solutions):\n")
         )

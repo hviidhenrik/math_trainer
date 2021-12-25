@@ -14,7 +14,7 @@ class Problem:
     instance_count = 0
 
     def __init__(
-        self, int_min: int, int_max: int, text_or_aloud: str, **kwargs
+            self, int_min: int, int_max: int, text_or_aloud: str, **kwargs
     ) -> None:
         Problem.instance_count += 1
         self.mode_to_operator_string_mapping = {
@@ -107,12 +107,12 @@ class MultiplicationProblem(Problem):
 
 class DivisionProblem(Problem):
     def __init__(
-        self,
-        int_min: int,
-        int_max: int,
-        significant_digits: int = 1,
-        only_integers: bool = False,
-        **kwargs,
+            self,
+            int_min: int,
+            int_max: int,
+            significant_digits: int = 1,
+            only_integers: bool = False,
+            **kwargs,
     ) -> None:
         super().__init__(int_min, int_max, **kwargs)
         self.operator = np.divide
@@ -167,10 +167,10 @@ class SquareProblem(Problem):
 
 class SquareRootProblem(Problem):
     def __init__(
-        self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs
+            self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs
     ) -> None:
         assert (
-            int_max >= int_min >= 0
+                int_max >= int_min >= 0
         ), "Minimum for square root problems must be positive or 0"
         super().__init__(int_min, int_max, **kwargs)
         self.operator = np.sqrt
@@ -195,13 +195,34 @@ class SquareRootProblem(Problem):
         return f"sqrt({self.num1})"
 
 
+class LogarithmProblem(SquareRootProblem):
+    def __init__(
+            self, int_min: int, int_max: int, significant_digits: int = 1, **kwargs
+    ) -> None:
+        assert (
+                int_max >= int_min > 0
+        ), "Minimum for logarithm problems must be strictly positive"
+        super().__init__(int_min, int_max, significant_digits, **kwargs)
+        self.operator = np.log
+        self.problem_type = "logarithm"
+        self.answer_type = float
+        self.significant_digits = significant_digits
+        self._select_and_set_numbers()
+
+    def __str__(self) -> str:
+        return f"log({self.num1})"
+
+    def __repr__(self) -> str:
+        return f"log({self.num1})"
+
+
 class TimeDifferenceProblem(Problem):
     def __init__(self, int_min: int = 1, int_max: int = 24, **kwargs) -> None:
         super().__init__(int_min=int_min, int_max=int_max, **kwargs)
         self.min_time_difference = int_min
         self.max_time_difference = int_max
         assert (
-            0 < self.min_time_difference < self.max_time_difference < 24
+                0 < self.min_time_difference < self.max_time_difference < 24
         ), "Time difference must be minimum 1 and max 23 hours"
         self.operator = None
         self.problem_type = "time_difference"
@@ -217,7 +238,7 @@ class TimeDifferenceProblem(Problem):
             num2 = np.random.randint(0, 23 + 1)
             time_diff = abs(num1 - num2) % 24
             result_is_in_allowable_range = (
-                self.min_time_difference <= time_diff <= self.max_time_difference
+                    self.min_time_difference <= time_diff <= self.max_time_difference
             )
 
         self.num1 = min((num1, num2))
@@ -241,6 +262,7 @@ class ProblemGenerator:
             "division": DivisionProblem,
             "square": SquareProblem,
             "square_root": SquareRootProblem,
+            "logarithm": LogarithmProblem,
             "time_difference": TimeDifferenceProblem,
         }
         self.problem_arguments = kwargs
@@ -278,6 +300,8 @@ class ProblemReader:
             text = f"{self.problem.num1} i anden"
         elif problem_type == "square_root":
             text = f"Kvadratroden af {self.problem.num1}"
+        elif problem_type == "logarithm":
+            text = f"Logaritmen af {self.problem.num1}"
         elif problem_type == "time_difference":
             text = f"Timer mellem {self.problem.num1} og {self.problem.num2}"
         else:
