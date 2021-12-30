@@ -7,8 +7,8 @@ the purpose of this Python program was twofold:
  1) To train my python skills
  2) To train my mental math skills
 
-However, nowadays I've learned Python much more through my 
-work, so the purpose is now just to train my mental math 
+However, nowadays, I've learned Python much better through my 
+work. The purpose is therefore now just to train my mental math 
 abilities and have fun developing this project further.
 
 The program is easy to use. Simply run main.py and the 
@@ -18,12 +18,11 @@ your results to.
 
 ## To be added
 
-New types of problems are added every now and then, when 
-I feel like it. The current back log of things to do is 
+New types of problems are added now and then, when 
+I feel like it. The current backlog of things to do is 
 as listed below:
 
 - implement general approximation of otherwise "difficult" problems, e.g. large multiplication problems
-- implement log approximation mode
 - make text to speech mode able to pose problems in English (currently only Danish)
 - make saved dataframe store number of posed questions as there seems to be a slight fatigue
   when doing many questions versus a few, which pulls up mean time slightly

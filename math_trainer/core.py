@@ -209,6 +209,18 @@ class LogarithmProblem(SquareRootProblem):
         self.significant_digits = significant_digits
         self._select_and_set_numbers()
 
+    def _select_and_set_numbers(self) -> None:
+        import random
+        available_numbers = [k for k in range(self.int_min, self.int_max+1)]
+        # if eulers number, e, is within the selected range, include it as a problem argument
+        if self.int_min <= np.exp(1) <= self.int_max:
+            available_numbers.append(np.exp(1))
+        self.num1 = random.sample(available_numbers, 1)[0]
+        self.num2 = None
+        self.result = np.round(
+            self.operator(self.num1), self.significant_digits
+        )  # the correct result
+
     def __str__(self) -> str:
         return f"log({self.num1})"
 
