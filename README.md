@@ -22,6 +22,7 @@ New types of problems are added now and then, when
 I feel like it. The current backlog of things to do is 
 as listed below:
 
+- implement trigonometric problems like sin and cosine with periodic arguments
 - implement general approximation of otherwise "difficult" problems, e.g. large multiplication problems
 - make text to speech mode able to pose problems in English (currently only Danish)
 - make saved dataframe store number of posed questions as there seems to be a slight fatigue
