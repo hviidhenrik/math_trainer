@@ -1,9 +1,11 @@
 import os
-from config.definitions import *
 from pathlib import Path
 from timeit import default_timer as timer
+
 from gtts import gTTS
 from playsound import playsound
+
+from config.definitions import *
 from math_trainer.problem.problems import *
 from math_trainer.utils import check_for_quit
 
