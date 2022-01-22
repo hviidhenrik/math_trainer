@@ -6,3 +6,4 @@ seaborn
 scipy
 scikit-learn
 playsound==1.2.2
+pytest
