@@ -3,8 +3,10 @@ import pandas as pd
 import seaborn as sns
 from scipy import stats
 
-from math_trainer.core import *
-from math_trainer.helpers import check_for_quit, calculate_overall_performance_score
+from math_trainer.problem.problems import *
+from math_trainer.problem.utils import *
+from math_trainer.utils import (calculate_overall_performance_score,
+                                check_for_quit)
 
 print("WELCOME TO MATH TRAINER v1.2")
 print("----------------------------")
