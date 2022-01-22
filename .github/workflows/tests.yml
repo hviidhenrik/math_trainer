@@ -1,10 +1,10 @@
 name: "Run unit tests"
 
 on:
-  push:
-    branches: [add_github_actions_and_precommit]
+#  push:
+#    branches: [add_github_actions_and_precommit]
   pull_request:
-    branches: [ master ]
+    branches: [ master, test ]
 
 jobs:
   build:
