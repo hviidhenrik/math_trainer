@@ -3,6 +3,7 @@ from typing import Any, List, Union
 
 import numpy as np
 import pandas as pd
+from numpy import ndarray
 
 from config.definitions import *
 
@@ -17,7 +18,7 @@ def check_for_quit(user_input: Union[str, List[str]]) -> None:
         quit()
 
 
-def calculate_overall_performance_score(problem_list: List[Any]) -> float:
+def calculate_overall_performance_score(problem_list: List[Any]) -> ndarray:
     assert len(problem_list) > 0, "List of problems is empty"
     scores = [problem.score for problem in problem_list]
     return np.mean(scores)
