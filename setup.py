@@ -5,6 +5,5 @@ setup(
     packages=find_packages(),
     version="1.0",
     description="Simple Python program to practice mental math",
-    author="Henrik Hviid Hansen",
-    author_email="hviidhenrik@outlook.com",
+    author="Henrik Hviid Hansen"
 )
