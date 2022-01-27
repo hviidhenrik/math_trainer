@@ -1,0 +1,32 @@
+name: "Run unit tests"
+
+on:
+#  push:
+#    branches: [add_github_actions_and_precommit]
+  pull_request:
+    branches: [ master, test ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        C:\Miniconda\condabin\conda.bat env create --name base python=3.7
+        C:\Miniconda\condabin\conda.bat init powershell
+        C:\Miniconda\condabin\conda.bat activate base
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+    - name: Test with pytest
+      run: |
+        C:\Miniconda\condabin\conda.bat activate base
+        pytest --verbose
