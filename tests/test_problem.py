@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from math_trainer.problem import Problem
 
 
