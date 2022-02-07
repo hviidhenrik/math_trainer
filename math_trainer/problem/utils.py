@@ -5,8 +5,18 @@ from timeit import default_timer as timer
 from gtts import gTTS
 from playsound import playsound
 
-from config.definitions import *
-from math_trainer.problem.problems import *
+from math_trainer.config.definitions import AUDIO_FILES_PATH
+from math_trainer.problem.problems import (
+    AdditionProblem,
+    DivisionProblem,
+    LogarithmProblem,
+    MultiplicationProblem,
+    Problem,
+    SquareProblem,
+    SquareRootProblem,
+    SubtractionProblem,
+    TimeDifferenceProblem,
+)
 from math_trainer.utils import check_for_quit
 
 
@@ -27,9 +37,7 @@ class ProblemGenerator:
 
     def generate_problem(self):
         # generate a problem based on the selected problem type and other choices
-        return self.problem_type_to_problem_object_mapping[self.problem_type](
-            **self.problem_arguments
-        )
+        return self.problem_type_to_problem_object_mapping[self.problem_type](**self.problem_arguments)
 
 
 class ProblemReader:
@@ -102,21 +110,15 @@ class ProblemIO:
                     self.problem.answer = input_answer
                     self.problem.calculate_performance_score()
                 except ValueError:
-                    print(
-                        'Bad input detected - please provide integer numbers or "stop" (s)\n'
-                    )
+                    print('Bad input detected - please provide integer numbers or "stop" (s)\n')
         return is_done_playing
 
     def print_feedback_on_answer(self):
         if self.problem.answer_is_correct:
             print(
-                f"Correct - {self.problem.time:.2f} seconds\n"
-                f"Score: {self.problem.score:.0f}\n",
-                end="\n",
+                f"Correct - {self.problem.time:.2f} seconds\n" f"Score: {self.problem.score:.0f}\n", end="\n",
             )
         else:
             print(
-                f"Incorrect - {self.problem.time:.2f} seconds\n"
-                f"Score: {self.problem.score:.0f}\n",
-                end="\n",
+                f"Incorrect - {self.problem.time:.2f} seconds\n" f"Score: {self.problem.score:.0f}\n", end="\n",
             )

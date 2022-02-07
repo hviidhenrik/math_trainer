@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from numpy import ndarray
 
-from config.definitions import *
+from math_trainer.config.definitions import TRAINING_FILES_PATH
 
 
 def check_for_quit(user_input: Union[str, List[str]]) -> None:

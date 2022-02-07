@@ -1,14 +1,17 @@
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from scipy import stats
 
-from math_trainer.problem.problems import *
-from math_trainer.problem.utils import *
-from math_trainer.utils import (calculate_overall_performance_score,
-                                check_for_quit)
+from math_trainer.config.definitions import TRAINING_FILES_PATH, VERSION
+from math_trainer.problem.problems import Problem
+from math_trainer.problem.utils import ProblemGenerator, ProblemIO
+from math_trainer.utils import calculate_overall_performance_score, check_for_quit
 
-print("WELCOME TO MATH TRAINER v1.2")
+print(f"WELCOME TO MATH TRAINER v{VERSION}")
 print("----------------------------")
 print("How would you like to play?\n")
 
@@ -75,9 +78,7 @@ while True:
 
     # validate input and prompt user again if erroneous input was detected
     try:
-        game_mode_as_text_or_aloud = (
-            "text" if int(game_mode_as_text_or_aloud) == 1 else "aloud"
-        )
+        game_mode_as_text_or_aloud = "text" if int(game_mode_as_text_or_aloud) == 1 else "aloud"
     except (KeyError, ValueError):
         print("Bad input detected. Must be either 1 or 2: \n")
         continue
@@ -139,9 +140,7 @@ while True:
         only_integers = True if "y" in only_integers.lower() else False
     significant_digits = 0
     if selected_problem_type in ["division", "square_root", "logarithm"] and not only_integers:
-        significant_digits = int(
-            input("Significant digits (0 for integer solutions):\n")
-        )
+        significant_digits = int(input("Significant digits (0 for integer solutions):\n"))
     print("")
 
     # check that the provided limits are actually integers, else prompt for it again
@@ -219,12 +218,7 @@ else:
 
 if quick_start_or_with_save_file == "quick" and len(problem_list) > 0:
     df_to_print = pd.DataFrame(
-        {
-            "mean": np.mean(df["time"]),
-            "median": np.median(df["time"]),
-            "std": np.std(df["time"]),
-        },
-        index=[0],
+        {"mean": np.mean(df["time"]), "median": np.median(df["time"]), "std": np.std(df["time"]),}, index=[0],
     )
     print("\nResponse time (seconds):\n", df_to_print.round(3))
     # ask if user wishes to save results to a file
@@ -245,9 +239,7 @@ if quick_start_or_with_save_file == "quick" and len(problem_list) > 0:
             except ValueError:
                 # if input is empty ask user to provide a better filename
                 if all(i == " " for i in file):
-                    print(
-                        "\nEmpty input detected. Please provide a filename or number\n"
-                    )
+                    print("\nEmpty input detected. Please provide a filename or number\n")
                     continue
                 file = file if file.endswith(".csv") else file + ".csv"
                 break
@@ -259,10 +251,7 @@ if quick_start_or_with_save_file == "quick" and len(problem_list) > 0:
 
         write_mode = "a" if file in files else "w"  # append or write
         df.to_csv(
-            TRAINING_FILES_PATH / file,
-            index=False,
-            mode=write_mode,
-            header=write_mode == "w",
+            TRAINING_FILES_PATH / file, index=False, mode=write_mode, header=write_mode == "w",
         )
     else:
         quit()
@@ -280,13 +269,7 @@ date_arrays = [df1[df1["date"] == date][["time", "score", "date"]] for date in d
 # print mean and sd
 df5 = pd.DataFrame(
     [
-        (
-            np.mean(dates.time),
-            np.median(dates.time),
-            np.std(dates.time),
-            np.mean(dates.score),
-            dates.date.unique(),
-        )
+        (np.mean(dates.time), np.median(dates.time), np.std(dates.time), np.mean(dates.score), dates.date.unique(),)
         for dates in date_arrays
     ],
     columns=["mean", "median", "sd", "score", "date"],
